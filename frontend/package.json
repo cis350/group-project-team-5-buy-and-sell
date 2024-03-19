@@ -1,0 +1,11 @@
+{
+  "name": "buyandsell",
+  "version": "1.0.0",
+  "description": "cis-3500 project group 5 buy and sell",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
