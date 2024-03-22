@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import  mongoClient from 'mongodb'
 
+import routers from '../routes/routers';
+
 // for login APIs
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -24,6 +26,8 @@ app.get('/', (request, response) => {
     //console.log(request);
     return response.status(234).send("Successfully Connected to CIS 3500 Group 5 - Buy and Sell");
 });
+
+routers.forEach((entry) => app.use(entry.prefix, entry.router));
 
 mongoose
     .connect(mongoDBURL)
