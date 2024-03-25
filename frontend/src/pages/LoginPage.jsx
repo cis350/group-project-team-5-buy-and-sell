@@ -1,27 +1,25 @@
 import React from 'react'
-import Navbar from '../components/Navbar'
 
 const LoginPage = () => {
     return (
         // Adjust the pt (padding-top) value as needed to match your Navbar's height
         <div className=''>
-            <Navbar />
             {/* Background image div */}
             <div className="flex flex-col items-center pt-16 bg-white">
-      <div className="text-xl font-extrabold leading-8 text-black">
+      <div className="text-xl font-extrabold leading-5 text-black">
         PennMart
       </div>
-      <div className="flex gap-5 justify-between pr-5 mt-6 text-xl font-medium leading-8 text-black">
-        <div>Home</div>
-        <div>My Profile</div>
-        <div>About</div>
+      <div className="flex gap-10 justify-between pr-0 mt-2 text-xl font-medium leading-8 text-black">
+        <button>Home</button>
+        <button>My Profile</button>
+        <button>About</button>
       </div>
-      <div className="mt-36 text-6xl font-bold tracking-tighter text-center text-black max-md:mt-10 max-md:max-w-full max-md:text-4xl">
+      <div className="mt-20 text-6xl font-bold tracking text-center text-black max-md:mt-5 max-md:max-w-full max-md:text-4xl">
         Welcome
       </div>
-      <div className="mt-2 text-xl font-medium leading-8 underline text-neutral-600">
+      <div className="mt-2 text-xl font-medium leading-8 text-neutral-600">
                     Sign in to PennMart or{" "}
-                    <span className="underline text-neutral-600">create an account</span>
+                    <span className="underline text-neutral-500">create an account</span>
                 </div>
                 {/* School Email Input */}
                 <input type="email" className="justify-center items-start px-4 py-3 mt-16 max-w-full text-base font-medium leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5 max-md:mt-10" placeholder="School Email" />
