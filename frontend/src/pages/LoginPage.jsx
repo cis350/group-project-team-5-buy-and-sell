@@ -6,32 +6,32 @@ const LoginPage = () => {
         <div className=''>
             {/* Background image div */}
             <div className="flex flex-col items-center pt-16 bg-white">
-      <div className="text-xl font-extrabold leading-5 text-black">
+      <div className="text-xl font-interextra leading-5 text-black mb-2">
         PennMart
       </div>
-      <div className="flex gap-10 justify-between pr-0 mt-2 text-xl font-medium leading-8 text-black">
+      <div className="flex gap-10 justify-between pr-0 mt-2 text-lg font-inter leading-8 text-black">
         <button>Home</button>
         <button>My Profile</button>
         <button>About</button>
       </div>
-      <div className="mt-20 text-6xl font-bold tracking text-center text-black max-md:mt-5 max-md:max-w-full max-md:text-4xl">
+      <div className="mt-40 text-6xl font-interextra tracking text-center text-black max-md:mt-5 max-md:max-w-full max-md:text-4xl">
         Welcome
       </div>
-      <div className="mt-2 text-xl font-medium leading-8 text-neutral-600">
+      <div className="mt-2 text-xl font-inter leading-8 text-neutral-600">
                     Sign in to PennMart or{" "}
                     <span className="underline text-neutral-500">create an account</span>
                 </div>
                 {/* School Email Input */}
-                <input type="email" className="justify-center items-start px-4 py-3 mt-16 max-w-full text-base font-medium leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5 max-md:mt-10" placeholder="School Email" />
+                <input type="email" className="justify-center items-start px-4 py-3 mt-16 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5 max-md:mt-10" placeholder="School Email" />
                 {/* Password Input */}
-                <input type="password" className="justify-center items-start px-4 py-3 mt-4 max-w-full text-base font-medium leading-6 whitespace-nowrap bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5" placeholder="Password" />
-                <button className="justify-center px-6 py-3.5 mt-7 text-xl font-extrabold leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5">
+                <input type="password" className="justify-center items-start px-4 py-3 mt-4 max-w-full text-base font-inter leading-6 whitespace-nowrap bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5" placeholder="Password" />
+                <button className="justify-center px-6 py-3.5 mt-7 text-xl font-interbold leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5">
                     Sign In
                 </button>
       <div className="flex flex-col self-stretch px-20 pb-20 mt-72 w-full bg-white max-md:px-5 max-md:mt-10 max-md:max-w-full">
         <div className="shrink-0 h-px border border-solid bg-neutral-200 border-neutral-200 max-md:max-w-full" />
         <div className="flex gap-5 justify-between mt-12 w-full max-md:flex-wrap max-md:mt-10 max-md:max-w-full">
-          <div className="self-start text-xl font-extrabold leading-8 text-black">
+          <div className="self-start text-xl font-interextra leading-8 text-black">
             PennMart
           </div>
           <div className="flex gap-2">
