@@ -1,6 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+
+
 
 function LoginPage() {
+  const navigate = useNavigate();
+  // function to navigate to the registration page
+  const goRegistration = () => {
+    navigate('/registration');
+  };
+  
   return (
     // Adjust the pt (padding-top) value as needed to match your Navbar's height
     <div className="">
@@ -20,7 +30,12 @@ function LoginPage() {
         <div className="mt-2 text-xl font-inter leading-8 text-neutral-600">
           Sign in to PennMart or
           {' '}
-          <span className="underline text-neutral-500">create an account</span>
+          <button 
+            type="button" 
+            onClick={goRegistration}
+            className="underline text-neutral-500"
+            >
+              create an account</button>
         </div>
         {/* School Email Input */}
         <input type="email" className="justify-center items-start px-4 py-3 mt-16 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5 max-md:mt-10" placeholder="School Email" />
