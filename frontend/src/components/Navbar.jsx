@@ -32,7 +32,7 @@ function Navbar() {
                     <p className="font-inter mr-12 text-lg">My Profile</p>
                     <button
                         type="button"
-                        className="p-8 font-interbold text-base bg-penn-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-6"
+                        className="transition ease-in-out delay-50 p-8 font-interbold text-base bg-penn-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-6"
                         onClick={goLogin}
                     >
                         Log In
