@@ -27,9 +27,9 @@ function Navbar() {
                     PennMart
                 </div>
                 <div className="flex items-center">
-                    <p className="font-inter mr-12 text-lg">Search</p>
-                    <p className="font-inter mr-12 text-lg">Buy Items</p>
-                    <p className="font-inter mr-12 text-lg">My Profile</p>
+                    <button type="button" className="font-inter mr-12 text-lg">Search</button>
+                    <button type="button" className="font-inter mr-12 text-lg">Buy Items</button>
+                    <button type="button" className="font-inter mr-12 text-lg">My Profile</button>
                     <button
                         type="button"
                         className="transition ease-in-out delay-50 p-8 font-interbold text-base bg-penn-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-6"
