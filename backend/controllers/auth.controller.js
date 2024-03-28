@@ -20,7 +20,7 @@ const register = async (
      */
 }
 
-export {
+module.exports = {
     login,
-    register
-}
+    register,
+};

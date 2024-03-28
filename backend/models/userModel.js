@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import jwt from 'jsonwebtoken';
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 const userSchema = mongoose.Schema(
     {
@@ -48,4 +48,5 @@ const userSchema = mongoose.Schema(
     }
 );
 
-export const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+module.exports = User;

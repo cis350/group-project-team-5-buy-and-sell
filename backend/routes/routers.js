@@ -1,4 +1,4 @@
-import authRouter from './auth.route';
+const authRouter = require('./auth.router.js');
 
 const prefix = [
     {
@@ -7,4 +7,4 @@ const prefix = [
     },
   ];
   
-export default prefix;
+module.exports = prefix;
