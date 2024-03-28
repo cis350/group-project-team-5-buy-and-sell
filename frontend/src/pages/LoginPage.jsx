@@ -8,6 +8,11 @@ function LoginPage() {
   const goRegistration = () => {
     navigate('/registration');
   };
+
+  const goHome = () => {
+    navigate('/');
+  };
+
   return (
     <motion.div
       key="modal"
@@ -24,9 +29,13 @@ function LoginPage() {
             PennMart
           </div>
           <div className="flex gap-10 justify-between pr-0 mt-2 text-lg font-inter leading-8 text-black">
-            <button type="button">Home</button>
-            <button type="button">My Profile</button>
-            <button type="button">About</button>
+            <button
+              type="button"
+              onClick={goHome}
+            >
+              Home
+            </button>
+            <button type="button">About Us</button>
           </div>
           <div className="mt-40 text-6xl font-interextra tracking text-center text-black max-md:mt-5 max-md:max-w-full max-md:text-4xl">
             Welcome
