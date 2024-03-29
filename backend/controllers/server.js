@@ -48,14 +48,14 @@ webapp.post("/register", function(req, res) {
     User.register(new User({ email: req.body.email, username: req.body.username, firstName: req.body.firstName, lastName: req.body.lastName }), req.body.password, function(err, user) {
         if (err) {
             // Direct response with error message
-            return res.json({ success: false, message: "Your account could not be saved. Error: " + err });
+            return res.status(401).json({ success: false, message: "Your account could not be saved. Error: " + err });
         } else {
             // Log in the user after successfully registering
             req.login(user, function(err) {
                 if (err) {
-                    return res.json({ success: false, message: err });
+                    return res.status(401).json({ success: false, message: err });
                 } else {
-                    return res.json({ success: true, message: "Your account has been saved" });
+                    return res.status(201).json({ success: true, message: "Your account has been saved" });
                 }
             });
         }
@@ -64,7 +64,7 @@ webapp.post("/register", function(req, res) {
 
 webapp.post("/login", function(req, res, next) {
     if (!req.body.username) {
-        return res.json({ success: false, message: "Username was not given" });
+        return res.status(401).json({ success: false, message: "Username was not given" });
     } else if (!req.body.password) {
         return res.json({ success: false, message: "Password was not given" });
     } else {
@@ -73,12 +73,12 @@ webapp.post("/login", function(req, res, next) {
             if (err) { return next(err); }
             if (!user) {
                 // If authentication failed, redirect or send a message
-                return res.json({ success: false, message: "Login failed" });
+                return res.status(401).json({ success: false, message: "Login failed" });
             }
             req.logIn(user, function(err) {
                 if (err) { return next(err); }
                 // Redirect or send a success message upon successful login
-                return res.json({ success: true, message: "Logged in successfully" });
+                return res.status(200).json({ success: true, message: "Logged in successfully" });
             });
         })(req, res, next); // Make sure to call it as a function with req, res, next
     }
