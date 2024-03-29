@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const passportLocalMongoose = require('passport-local-mongoose'); 
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const userSchema = mongoose.Schema(
     {
@@ -25,7 +24,7 @@ const userSchema = mongoose.Schema(
                 message: 'A valid school email ending with ".edu" must be used.',
             },
         },
-        username : {type: String, unique: true, required:true},
+        username: { type: String, unique: true, required: true },
         role: {
             type: Number,
             default: 0, // 0 for normal user, 1 for admin
@@ -39,11 +38,11 @@ const userSchema = mongoose.Schema(
     },
     {
         timestamps: true,
-    }
+    },
 );
 
-// plugin for passport-local-mongoose 
+// plugin for passport-local-mongoose
 userSchema.plugin(passportLocalMongoose);
 
-const User = mongoose.model('User', userSchema); 
+const User = mongoose.model('User', userSchema);
 module.exports = User;
