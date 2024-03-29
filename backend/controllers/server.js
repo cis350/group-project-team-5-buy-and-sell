@@ -23,7 +23,11 @@ const User = require('../models/userModel.js');
 // enable cors
 webapp.use(cors());
 webapp.use(bodyParser.urlencoded({ extended: false }));
-webapp.use(session({secret: 'some secret key'}))
+webapp.use(session({
+    secret: 'some secret key',
+    resave: true,
+    saveUninitialized: true
+}));
 webapp.use(bodyParser.json()); // support json encoded bodies
 
 // configure express to parse request bodies

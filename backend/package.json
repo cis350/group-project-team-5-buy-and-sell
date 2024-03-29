@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "cis 3500 - group 5 backend",
   "main": "index.js",
+  "engines": {
+    "node": "21.x"
+  },
   "scripts": {
+    "start": "nodemon index.js",
     "test": "jest --coverage --detectOpenHandles",
     "dev": "nodemon index.js"
   },
