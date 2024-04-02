@@ -127,5 +127,71 @@ describe('register endpoint', () => {
 
         // after the test case, delete the dummy user so that it does not stay in the DB
         await User.deleteOne({ username: tempUser.username });
+    
     });
+    test('No edu emai;', async () => {
+        const tempUser2 = {
+            username: 'testuser_temp',
+            password: 'temporary',
+            firstName: 'Jane',
+            lastName: 'Doe',
+            email: `temp_${r}@gmail.com`,
+        };
+        const response = await request(webapp).post('/register').send(tempUser2);
+
+        expect(response.status).toEqual(401);
+        expect(response.type).toBe('application/json');
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toEqual('Your account could not be registered.');
+    });
+    test('Invalid password;', async () => {
+        const tempUser3 = {
+            username: 'testuser_temp',
+            password: '',
+            firstName: 'Jane',
+            lastName: 'Doe',
+            email: `temp_${r}@college.edu`,
+        };
+        const response = await request(webapp).post('/register').send(tempUser3);
+
+        expect(response.status).toEqual(401);
+        expect(response.type).toBe('application/json');
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toEqual('Your account could not be registered.');
+    });
+    test('Stored in database successfully', async () => {
+        // create and register a dummy user, only for testing purposes
+        const tempUser = {
+            username: 'testuser_temp',
+            password: 'temporary',
+            firstName: 'Jane',
+            lastName: 'Doe',
+            email: `temp_${r}@college.edu`,
+        };
+
+        const response = await request(webapp).post('/register').send(tempUser);
+
+        expect(response.status).toEqual(201);
+        expect(response.type).toBe('application/json');
+        expect(response.body.success).toBe(true);
+        expect(response.body.message).toEqual('Your account has been saved');
+        // fetch the user from the database
+        const user = await User.findOne({ username: tempUser.username });
+
+        // assert that the user exists
+        expect(user).toBeTruthy();
+
+        // assert that the user has the correct fields
+        expect(user.username).toEqual(tempUser.username);
+        expect(user.firstName).toEqual(tempUser.firstName);
+        expect(user.lastName).toEqual(tempUser.lastName);
+        expect(user.email).toEqual(tempUser.email);
+        // after the test case, delete the dummy user so that it does not stay in the DB
+        await User.deleteOne({ username: tempUser.username });
+    
+    });
+    
+    
+    
+
 });

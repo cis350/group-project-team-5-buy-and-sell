@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1711753644026" clover="3.2.0">
-  <project timestamp="1711753644026" name="All files">
+<coverage generated="1712073087358" clover="3.2.0">
+  <project timestamp="1712073087358" name="All files">
     <metrics statements="56" coveredstatements="53" conditionals="18" coveredconditionals="15" methods="8" coveredmethods="8" elements="82" coveredelements="76" complexity="0" loc="56" ncloc="56" packages="3" files="3" classes="3"/>
     <package name="backend">
       <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="config.js" path="/Users/jinseokim/github/group-project-team-5-buy-and-sell/backend/config.js">
+      <file name="config.js" path="C:\Users\qaree\Downloads\group-project-team-5-buy-and-sell\backend\config.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
       </file>
     </package>
     <package name="backend.controllers">
       <metrics statements="47" coveredstatements="44" conditionals="18" coveredconditionals="15" methods="7" coveredmethods="7"/>
-      <file name="server.js" path="/Users/jinseokim/github/group-project-team-5-buy-and-sell/backend/controllers/server.js">
+      <file name="server.js" path="C:\Users\qaree\Downloads\group-project-team-5-buy-and-sell\backend\controllers\server.js">
         <metrics statements="47" coveredstatements="44" conditionals="18" coveredconditionals="15" methods="7" coveredmethods="7"/>
         <line num="6" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
@@ -31,14 +31,14 @@
         <line num="39" count="1" type="stmt"/>
         <line num="40" count="1" type="stmt"/>
         <line num="42" count="1" type="stmt"/>
-        <line num="43" count="10" type="stmt"/>
-        <line num="50" count="10" type="cond" truecount="2" falsecount="0"/>
-        <line num="52" count="1" type="stmt"/>
-        <line num="55" count="9" type="stmt"/>
-        <line num="56" count="9" type="cond" truecount="1" falsecount="1"/>
+        <line num="43" count="16" type="stmt"/>
+        <line num="50" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="52" count="3" type="stmt"/>
+        <line num="55" count="13" type="stmt"/>
+        <line num="56" count="13" type="cond" truecount="1" falsecount="1"/>
         <line num="57" count="0" type="stmt"/>
-        <line num="59" count="9" type="stmt"/>
-        <line num="62" count="9" type="stmt"/>
+        <line num="59" count="13" type="stmt"/>
+        <line num="62" count="13" type="stmt"/>
         <line num="66" count="1" type="stmt"/>
         <line num="67" count="5" type="cond" truecount="2" falsecount="0"/>
         <line num="68" count="1" type="stmt"/>
@@ -64,13 +64,13 @@
     </package>
     <package name="backend.models">
       <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-      <file name="userModel.js" path="/Users/jinseokim/github/group-project-team-5-buy-and-sell/backend/models/userModel.js">
+      <file name="userModel.js" path="C:\Users\qaree\Downloads\group-project-team-5-buy-and-sell\backend\models\userModel.js">
         <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
-        <line num="21" count="9" type="stmt"/>
-        <line num="22" count="9" type="stmt"/>
+        <line num="21" count="14" type="stmt"/>
+        <line num="22" count="14" type="stmt"/>
         <line num="45" count="1" type="stmt"/>
         <line num="47" count="1" type="stmt"/>
         <line num="48" count="1" type="stmt"/>
