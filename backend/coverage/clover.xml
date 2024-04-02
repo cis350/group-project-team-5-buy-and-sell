@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1712074589075" clover="3.2.0">
-  <project timestamp="1712074589075" name="All files">
+<coverage generated="1712089941097" clover="3.2.0">
+  <project timestamp="1712089941097" name="All files">
     <metrics statements="56" coveredstatements="53" conditionals="18" coveredconditionals="15" methods="8" coveredmethods="8" elements="82" coveredelements="76" complexity="0" loc="56" ncloc="56" packages="3" files="3" classes="3"/>
     <package name="backend">
       <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="config.js" path="C:\Users\qaree\Downloads\group-project-team-5-buy-and-sell\backend\config.js">
+      <file name="config.js" path="/Users/jinseokim/github/group-project-team-5-buy-and-sell/backend/config.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
       </file>
     </package>
     <package name="backend.controllers">
       <metrics statements="47" coveredstatements="44" conditionals="18" coveredconditionals="15" methods="7" coveredmethods="7"/>
-      <file name="server.js" path="C:\Users\qaree\Downloads\group-project-team-5-buy-and-sell\backend\controllers\server.js">
+      <file name="server.js" path="/Users/jinseokim/github/group-project-team-5-buy-and-sell/backend/controllers/server.js">
         <metrics statements="47" coveredstatements="44" conditionals="18" coveredconditionals="15" methods="7" coveredmethods="7"/>
         <line num="6" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
@@ -64,7 +64,7 @@
     </package>
     <package name="backend.models">
       <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-      <file name="userModel.js" path="C:\Users\qaree\Downloads\group-project-team-5-buy-and-sell\backend\models\userModel.js">
+      <file name="userModel.js" path="/Users/jinseokim/github/group-project-team-5-buy-and-sell/backend/models/userModel.js">
         <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>

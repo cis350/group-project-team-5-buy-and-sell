@@ -9,7 +9,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:controllers\server.js
+SF:controllers/server.js
 FN:42,(anonymous_0)
 FN:48,(anonymous_1)
 FN:55,(anonymous_2)
@@ -97,7 +97,7 @@ BRF:18
 BRH:15
 end_of_record
 TN:
-SF:models\userModel.js
+SF:models/userModel.js
 FN:20,(anonymous_0)
 FNF:1
 FNH:1
