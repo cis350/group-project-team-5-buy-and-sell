@@ -50,6 +50,12 @@ function RegistrationPage() {
             placeholder="Last Name"
           />
         </div>
+        {/* Username Input */}
+        <input
+          type="username"
+          className="justify-center items-start px-4 py-3 mt-6 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5"
+          placeholder="Username"
+        />
         {/* School Email Input */}
         <input
           type="email"
