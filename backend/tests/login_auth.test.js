@@ -127,7 +127,6 @@ describe('register endpoint', () => {
 
         // after the test case, delete the dummy user so that it does not stay in the DB
         await User.deleteOne({ username: tempUser.username });
-    
     });
     test('No edu emai;', async () => {
         const tempUser2 = {
@@ -188,10 +187,5 @@ describe('register endpoint', () => {
         expect(user.email).toEqual(tempUser.email);
         // after the test case, delete the dummy user so that it does not stay in the DB
         await User.deleteOne({ username: tempUser.username });
-    
     });
-    
-    
-    
-
 });
