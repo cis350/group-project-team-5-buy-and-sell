@@ -51,8 +51,8 @@ function LoginPage() {
               create an account
             </button>
           </div>
-          {/* School Email Input */}
-          <input type="email" className="justify-center items-start px-4 py-3 mt-16 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5 max-md:mt-10" placeholder="School Email" />
+          {/* Username Input */}
+          <input type="username" className="justify-center items-start px-4 py-3 mt-16 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5 max-md:mt-10" placeholder="Username" />
           {/* Password Input */}
           <input type="password" className="justify-center items-start px-4 py-3 mt-4 max-w-full text-base font-inter leading-6 whitespace-nowrap bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5" placeholder="Password" />
           <button type="button" className="transition ease-in-out delay-50 hover:bg-blue-700 justify-center px-6 py-3.5 mt-7 text-xl font-interbold leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5">
