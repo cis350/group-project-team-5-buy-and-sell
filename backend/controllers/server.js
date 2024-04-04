@@ -90,7 +90,8 @@ webapp.post('/login', (req, res, next) => {
                     return next(err); // handle session save error
                 }
                 // Session saved successfully, send response
-                return res.status(201).json({ success: true, message: 'Logged in successfully' });
+                res.status(201).send(user);
+                // return res.status(201).json({ success: true, message: 'Logged in successfully' });
             });
         });
     })(req, res, next);
