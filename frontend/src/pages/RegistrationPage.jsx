@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 
 function RegistrationPage() {
   const navigate = useNavigate();
@@ -12,6 +13,27 @@ function RegistrationPage() {
   const goHome = () => {
     navigate('/');
   };
+
+  // If the user is already logged in, we want to redirect automatically to the home page
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Use axios to perform the GET request
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/register`, {
+          withCredentials: true,
+        });
+
+        // Check if the user is logged in based on the response
+        if (response.data.success && response.data.message === 'User is logged in') {
+          navigate('/'); // Redirect to home if logged in
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, [navigate]); // Add navigate as a dependency
 
   return (
     <motion.div

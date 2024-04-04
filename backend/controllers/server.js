@@ -1,44 +1,53 @@
-/**
- * Express webserver / controller
- */
-
-// import express
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-
-// import the cors -cross origin resource sharing- module
 const cors = require('cors');
-
-// create a new express app
-const webapp = express();
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const User = require('../models/userModel');
+const MongoStore = require('connect-mongo');
+const cookieParser = require('cookie-parser');
+const User = require('../models/userModel'); // Adjust the path as necessary
+const { mongoDBURL } = require('../config');
+require('dotenv').config();
 
-// import authentication functions
-// const { authenticateUser, verifyUser } = require('./utils/auth')
+// Create a new express app
+const webapp = express();
+webapp.use(cookieParser());
 
-// enable cors
-webapp.use(cors());
-webapp.use(bodyParser.urlencoded({ extended: false }));
-webapp.use(session({
-    secret: 'some secret key',
-    resave: true,
-    saveUninitialized: true,
+// Enable CORS and body parsing
+webapp.use(cors({
+    origin: 'http://localhost:5173', // Adjust to your front-end URL
+    credentials: true,
 }));
-webapp.use(bodyParser.json()); // support json encoded bodies
+webapp.use(bodyParser.urlencoded({ extended: false }));
+webapp.use(bodyParser.json()); // Support JSON encoded bodies
 
-// configure express to parse request bodies
+console.log(process.env.NODE_ENV);
+// Session configuration
+webapp.use(session({
+    secret: 'real secret key',
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: mongoDBURL,
+        collectionName: 'sessions',
+    }),
+    cookie: {
+        secure: false, // Set to true if serving your site over HTTPS
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24, // Example: sets cookie to expire after 24 hours
+    },
+}));
 
-// root endpoint route
+// Initialize Passport and restore authentication state, if any, from the session
 webapp.use(passport.initialize());
 webapp.use(passport.session());
 
-passport.use(new LocalStrategy(User.authenticate()));
+// Passport configuration with passport-local-mongoose
+passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Registration endpoint
 webapp.post('/register', (req, res) => {
     User.register(new User({
         email: req.body.email,
@@ -46,59 +55,58 @@ webapp.post('/register', (req, res) => {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
     }), req.body.password, (err, user) => {
-        // TODO: Diversify error cases
         if (err) {
-            // Direct response with error message
             return res.status(401).json({ success: false, message: 'Your account could not be registered.' });
         }
-        // Log in the user after successfully registering
         req.login(user, (error) => {
             if (error) {
                 return res.status(401).json({ success: false, message: error });
             }
             return res.status(201).json({ success: true, message: 'Your account has been saved' });
         });
-
         return false;
     });
 });
 
+// Login endpoint
 webapp.post('/login', (req, res, next) => {
-    if (!req.body.username) {
-        return res.status(401).json({ success: false, message: 'Username was not given' });
-    }
-
-    if (!req.body.password) {
-        return res.status(401).json({ success: false, message: 'Password was not given' });
-    }
-    // Call passport.authenticate directly within the route handler
     passport.authenticate('local', (err, user, info) => {
         if (err) {
             return next(err);
         }
         if (!user) {
-            // Check if the failure reason was due to an incorrect password
-            let message = 'User does not exist'; // Default message
-            if (info && info.name === 'IncorrectPasswordError') {
-                message = 'Incorrect password';
-            }
-            return res.status(401).json({ success: false, message });
+            return res.status(401).json({ success: false, message: info.message || 'Login failed' });
         }
         req.logIn(user, (error) => {
             if (error) {
                 return next(error);
             }
-            // Redirect or send a success message upon successful login
             return res.status(201).json({ success: true, message: 'Logged in successfully' });
         });
-
         return false;
-    })(req, res, next); // Make sure to call it as a function with req, res, next
-
-    return false;
+    })(req, res, next);
 });
 
-webapp.get('/', (request, response) => response.status(234).json({ message: 'Successfully Connected to CIS 3500 Group 5 - Buy and Sell' }));
+// Route to check if user is logged in
+webapp.get('/register', (req, res) => {
+    if (req.isAuthenticated()) {
+        return res.status(200).json({ success: true, message: 'User is logged in' });
+    }
+    return res.status(200).json({ success: true, message: 'User is not logged in' });
+});
 
-// export the webapp
+// Logout endpoint
+webapp.post('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) { return next(err); }
+        // Optionally, clear the client-side cookie that stores the session id
+        res.clearCookie('connect.sid', { path: '/' }); // Adjust the cookie name and path as needed
+        return res.status(201).json({ success: true, message: 'Logged out successfully' });
+    });
+});
+
+// Root endpoint
+webapp.get('/', (req, res) => res.status(200).json({ message: 'Successfully Connected' }));
+
+// Export the webapp
 module.exports = webapp;
