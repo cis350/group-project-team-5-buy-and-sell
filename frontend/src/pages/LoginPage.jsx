@@ -29,6 +29,7 @@ function LoginPage() {
 
   const apiLoginRequest = async () => {
     try {
+      console.log(import.meta.env.VITE_API_URL);
       await Promise.race([
         axios.post(`${import.meta.env.VITE_API_URL}/login`, {
           username,
