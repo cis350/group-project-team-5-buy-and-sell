@@ -36,8 +36,10 @@ webapp.use(session({
         collectionName: 'sessions',
     }),
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Ensure cookies are secure in production
+        secure: process.env.NODE_ENV === 'production', // Only set secure cookies in production
+        httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24, // Sets cookie to expire after 24 hours
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust for local development
     },
 }));
 
