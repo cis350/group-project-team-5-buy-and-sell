@@ -12,18 +12,20 @@ require('dotenv').config();
 // Create a new express app
 const webapp = express();
 // Trust the proxy for secure cookies and session management
-webapp.set('trust proxy', 1); // Trust the first proxy
+
+webapp.enable('trust proxy'); // add this line
 webapp.use(cookieParser());
 
 // Enable CORS and body parsing
 webapp.use(cors({
-    origin: 'https://group-project-team-5-buy-and-sell.vercel.app',
+    origin: ['https://group-project-team-5-buy-and-sell.vercel.app', 'http://localhost:5173'],
     credentials: true,
 }));
 
 webapp.use(bodyParser.urlencoded({ extended: false }));
 webapp.use(bodyParser.json()); // Support JSON encoded bodies
 
+console.log(process.env.NODE_ENV);
 // Session configuration
 webapp.use(session({
     secret: 'real secret key',
@@ -35,7 +37,6 @@ webapp.use(session({
     }),
     cookie: {
         secure: process.env.NODE_ENV === 'production', // Ensure cookies are secure in production
-        httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24, // Sets cookie to expire after 24 hours
     },
 }));
