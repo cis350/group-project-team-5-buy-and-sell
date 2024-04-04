@@ -49,6 +49,7 @@ function LoginPage() {
   };
 
   useEffect(() => {
+    console.log(import.meta.env.VITE_API_URL);
     const fetchData = async () => {
       try {
         // Use axios to perform the GET request
