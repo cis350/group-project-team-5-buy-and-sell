@@ -15,7 +15,7 @@ webapp.use(cookieParser());
 
 // Enable CORS and body parsing
 webapp.use(cors({
-    origin: ['http://localhost:5173', 'https://group-project-team-5-buy-and-sell.vercel.app'],
+    origin: 'https://group-project-team-5-buy-and-sell.vercel.app',
     credentials: true,
 }));
 
