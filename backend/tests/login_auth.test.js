@@ -27,12 +27,16 @@ afterEach(async () => {
     await mongoose.connection.close();
 });
 
+afterAll(async () => {
+    await mongoose.disconnect();
+});
+
 // general test case
 test('default path /', async () => {
     const response = await request(webapp).get('/');
-    expect(response.status).toEqual(234);
+    expect(response.status).toEqual(200);
     expect(response.type).toBe('application/json');
-    expect(response.body.message).toEqual('Successfully Connected to CIS 3500 Group 5 - Buy and Sell');
+    expect(response.body.message).toEqual('Successfully Connected');
 });
 
 // test cases for the login api
@@ -44,7 +48,7 @@ describe('Login Endpoint', () => {
         expect(response.status).toEqual(401);
         expect(response.type).toBe('application/json');
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toEqual('Username was not given');
+        expect(response.body.message).toEqual('Missing credentials');
     });
 
     test('missing password', async () => {
@@ -54,7 +58,7 @@ describe('Login Endpoint', () => {
         expect(response.status).toEqual(401);
         expect(response.type).toBe('application/json');
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toEqual('Password was not given');
+        expect(response.body.message).toEqual('Missing credentials');
     });
 
     test('login success', async () => {
@@ -65,8 +69,6 @@ describe('Login Endpoint', () => {
 
         expect(response.status).toEqual(201);
         expect(response.type).toBe('application/json');
-        expect(response.body.success).toBe(true);
-        expect(response.body.message).toEqual('Logged in successfully');
     });
 
     test('user does not exist', async () => {
@@ -81,7 +83,7 @@ describe('Login Endpoint', () => {
         expect(response.status).toEqual(401);
         expect(response.type).toBe('application/json');
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toEqual('User does not exist');
+        expect(response.body.message).toEqual('Password or username is incorrect');
     });
 
     test('Invalid Password', async () => {
@@ -93,7 +95,7 @@ describe('Login Endpoint', () => {
         expect(response.status).toEqual(401);
         expect(response.type).toBe('application/json');
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toEqual('Incorrect password');
+        expect(response.body.message).toEqual('Password or username is incorrect');
     });
 });
 

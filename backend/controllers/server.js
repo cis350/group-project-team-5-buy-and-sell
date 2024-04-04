@@ -25,7 +25,6 @@ webapp.use(cors({
 webapp.use(bodyParser.urlencoded({ extended: false }));
 webapp.use(bodyParser.json()); // Support JSON encoded bodies
 
-console.log(process.env.NODE_ENV);
 // Session configuration
 webapp.use(session({
     secret: 'real secret key',
@@ -93,8 +92,9 @@ webapp.post('/login', (req, res, next) => {
                 }
                 // Session saved successfully, send response
                 res.status(201).send(user);
-                // return res.status(201).json({ success: true, message: 'Logged in successfully' });
+                return false;
             });
+        return false;
         });
         return false;
     })(req, res, next);
