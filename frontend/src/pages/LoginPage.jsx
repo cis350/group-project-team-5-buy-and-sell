@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import axios from 'axios';
+import { useSnackbar } from 'notistack';
 
 function LoginPage() {
+  // define username and password variables (states) here
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
+
   const navigate = useNavigate();
   // function to navigate to the registration page
   const goRegistration = () => {
@@ -12,6 +19,53 @@ function LoginPage() {
   const goHome = () => {
     navigate('/');
   };
+
+  // Utility function to create a promise that rejects after a timeout
+  const timeout = (delay) => new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(new Error('Request timed out'));
+    }, delay);
+  });
+
+  const apiLoginRequest = async () => {
+    try {
+      await Promise.race([
+        axios.post(`${import.meta.env.VITE_API_URL}/login`, {
+          username,
+          password,
+        }, { withCredentials: true }),
+        timeout(3000), // 3000 milliseconds = 3 seconds
+      ]);
+      // setLoginFailure(false);
+      enqueueSnackbar('Successfully Logged In!', { variant: 'success' });
+      goHome();
+      // Handle success (e.g., navigate to another page, store the login token, etc.)
+    } catch (error) {
+      // setLoginFailure(true);
+      console.error('Login error:', error.response ? error.response.data : error.message);
+      // Handle error (e.g., display an error message)
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Use axios to perform the GET request
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/register`, {
+          withCredentials: true,
+        });
+
+        // Check if the user is logged in based on the response
+        if (response.data.success && response.data.message === 'User is logged in') {
+          navigate('/'); // Redirect to home if logged in
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchData(); // Call the async function
+  }, [navigate]); // Add navigate as a dependency
 
   return (
     <motion.div
@@ -52,10 +106,24 @@ function LoginPage() {
             </button>
           </div>
           {/* Username Input */}
-          <input type="username" className="justify-center items-start px-4 py-3 mt-16 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5 max-md:mt-10" placeholder="Username" />
+          <input
+          type="username"
+          onChange={(e) => setUsername(e.target.value)}
+          className="justify-center items-start px-4 py-3 mt-16 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5 max-md:mt-10"
+          placeholder="Username"
+          />
           {/* Password Input */}
-          <input type="password" className="justify-center items-start px-4 py-3 mt-4 max-w-full text-base font-inter leading-6 whitespace-nowrap bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5" placeholder="Password" />
-          <button type="button" className="transition ease-in-out delay-50 hover:bg-blue-700 justify-center px-6 py-3.5 mt-7 text-xl font-interbold leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5">
+          <input
+          type="password"
+          onChange={(e) => setPassword(e.target.value)}
+          className="justify-center items-start px-4 py-3 mt-4 max-w-full text-base font-inter leading-6 whitespace-nowrap bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5"
+          placeholder="Password"
+          />
+          <button
+          type="button"
+          onClick={apiLoginRequest}
+          className="transition ease-in-out delay-50 hover:bg-blue-700 justify-center px-6 py-3.5 mt-7 text-xl font-interbold leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5"
+          >
             Sign In
           </button>
           <div className="flex flex-col self-stretch px-20 pb-20 mt-72 w-full bg-white max-md:px-5 max-md:mt-10 max-md:max-w-full">

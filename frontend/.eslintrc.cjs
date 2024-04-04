@@ -23,6 +23,8 @@ module.exports = {
   },
   ignorePatterns: ['vite.config.js'/* other files to ginore */],
   rules: {
+    'import/no-extraneous-dependencies': 'off',
+    'no-console': ['error', { allow: ['warn', 'error'] }],
     indent: 'off',
     // suppress errors for missing 'import React' in files
     'react/react-in-jsx-scope': 'off',
