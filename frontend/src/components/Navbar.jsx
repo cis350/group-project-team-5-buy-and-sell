@@ -47,9 +47,6 @@ function Navbar() {
                 // Check if the user is logged in based on the response
                 if (response.data.success && response.data.message === 'User is logged in') {
                     setIsLoggedIn(true);
-                    enqueueSnackbar('Currently Logged In', { variant: 'success' });
-                } else {
-                    enqueueSnackbar('Not Logged In.', { variant: 'warning' });
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);

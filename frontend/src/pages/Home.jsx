@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useSnackbar } from 'notistack';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 
 function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,9 +17,6 @@ function Home() {
                 // Check if the user is logged in based on the response
                 if (response.data.success && response.data.message === 'User is logged in') {
                     setIsLoggedIn(true);
-                    enqueueSnackbar('Currently Logged In', { variant: 'success' });
-                } else {
-                    enqueueSnackbar('Not Logged In.', { variant: 'warning' });
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -62,6 +57,17 @@ function Home() {
                             </div>
                         </div>
                     </div>
+                </div>
+                <div className="text-center">
+                    {isLoggedIn ? (
+                        <h1 className="font-interlight text-center text-xl font-bold mb-6">
+                            Welcome!
+                        </h1>
+                    ) : (
+                        <h1 className="font-interlight text-center text-xl font-bold mb-6">
+                            Please Log In
+                        </h1>
+                    )}
                 </div>
             </div>
         </motion.div>
