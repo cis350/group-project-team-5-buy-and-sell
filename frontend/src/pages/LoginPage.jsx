@@ -29,7 +29,6 @@ function LoginPage() {
 
   const apiLoginRequest = async () => {
     try {
-      console.log(import.meta.env.VITE_API_URL);
       await Promise.race([
         axios.post(`${import.meta.env.VITE_API_URL}/login`, {
           username,
@@ -39,8 +38,8 @@ function LoginPage() {
       ]);
       // setLoginFailure(false);
       enqueueSnackbar('Successfully Logged In!', { variant: 'success' });
-      goHome();
       // Handle success (e.g., navigate to another page, store the login token, etc.)
+      goHome();
     } catch (error) {
       // setLoginFailure(true);
       console.error('Login error:', error.response ? error.response.data : error.message);

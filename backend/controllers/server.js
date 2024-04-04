@@ -84,9 +84,15 @@ webapp.post('/login', (req, res, next) => {
             if (error) {
                 return next(error);
             }
-            return res.status(201).json({ success: true, message: 'Logged in successfully' });
+            // Manually save the session before sending the response
+            req.session.save((err) => {
+                if (err) {
+                    return next(err); // handle session save error
+                }
+                // Session saved successfully, send response
+                return res.status(201).json({ success: true, message: 'Logged in successfully' });
+            });
         });
-        return false;
     })(req, res, next);
 });
 
