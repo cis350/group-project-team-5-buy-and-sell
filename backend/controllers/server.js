@@ -11,6 +11,8 @@ require('dotenv').config();
 
 // Create a new express app
 const webapp = express();
+// Trust the proxy for secure cookies and session management
+webapp.set('trust proxy', 1); // Trust the first proxy
 webapp.use(cookieParser());
 
 // Enable CORS and body parsing
