@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useSnackbar } from 'notistack';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 
 function Home() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Use axios to perform the GET request
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/register`, {
+                    withCredentials: true,
+                });
+
+                // Check if the user is logged in based on the response
+                if (response.data.success && response.data.message === 'User is logged in') {
+                    setIsLoggedIn(true);
+                    enqueueSnackbar('Currently Logged In', { variant: 'success' });
+                } else {
+                    enqueueSnackbar('Not Logged In.', { variant: 'warning' });
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchData(); // Call the async function
+    }, []);
+
     return (
         <motion.div
             key="modal"
