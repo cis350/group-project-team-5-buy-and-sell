@@ -32,9 +32,9 @@ webapp.use(session({
         collectionName: 'sessions',
     }),
     cookie: {
-        secure: false, // Set to true if serving your site over HTTPS
+        secure: process.env.NODE_ENV === 'production', // Ensure cookies are secure in production
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // Example: sets cookie to expire after 24 hours
+        maxAge: 1000 * 60 * 60 * 24, // Sets cookie to expire after 24 hours
     },
 }));
 
