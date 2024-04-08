@@ -9,6 +9,9 @@ const User = require('../models/userModel'); // Adjust the path as necessary
 const { mongoDBURL } = require('../config');
 require('dotenv').config();
 
+// import external routes
+const awsRoutes = require('../routes/awsRoutes');
+
 // Create a new express app
 const webapp = express();
 // Trust the proxy for secure cookies and session management
@@ -24,6 +27,9 @@ webapp.use(cors({
 
 webapp.use(bodyParser.urlencoded({ extended: false }));
 webapp.use(bodyParser.json()); // Support JSON encoded bodies
+
+// declaration for using external routes (including AWS)
+webapp.use('/aws', awsRoutes);
 
 // Session configuration
 webapp.use(session({
