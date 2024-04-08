@@ -2,9 +2,12 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
+
 
 function RegistrationPage() {
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   // function to navigate to the registration page
   const goLogin = () => {
     navigate('/login');
@@ -12,6 +15,25 @@ function RegistrationPage() {
 
   const goHome = () => {
     navigate('/');
+  };
+
+  const apiLoginRequest = async () => {
+    try {
+      await Promise.race([
+        axios.post(`${import.meta.env.VITE_API_URL}/register`, {
+          email,
+          username,
+          firstName,
+          lastName,
+          password,
+        }, { withCredentials: true }),
+        timeout(3000),
+      ]);
+      enqueueSnackbar('Successfully Registered!', { variant: 'success' });
+      goHome();
+    } catch (error) {
+      console.error('Registration error:', error.response ? error.response.data : error.message);
+    }
   };
 
   // If the user is already logged in, we want to redirect automatically to the home page
@@ -92,6 +114,7 @@ function RegistrationPage() {
         />
         <button
           type="button"
+          onClick={apiLoginRequest}
           className="transition ease-in-out delay-50 hover:bg-blue-700 justify-center px-6 py-3.5 mt-9 text-xl font-interextra leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5"
         >
           Create personal account
