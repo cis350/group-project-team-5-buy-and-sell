@@ -3,49 +3,20 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSnackbar } from 'notistack';
+import onFileUpload from '../utils/fileUpload';
 
 function AddItemPage() {
   const [itemName, setItemName] = useState('');
   const [itemDescription, setItemDescription] = useState('');
   const [itemPrice, setItemPrice] = useState('');
   const [photos, setPhotos] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedPayment, setSelectedPayment] = useState('');
+  const [selectedDelivery, setSelectedDelivery] = useState('');
+  const [user, setUser] = useState(null);
 
   // in order to use a snack bar, you must first initialize it:
   const { enqueueSnackbar } = useSnackbar();
-
-  const handlePhotoChange = (event) => {
-    if (event.target.files) {
-      const fileArray = Array.from(event.target.files).map((file) => URL.createObjectURL(file));
-      setPhotos((prevImages) => [...prevImages, ...fileArray]);
-    }
-  };
-
-  const handleRemovePhoto = (index) => {
-    setPhotos(photos.filter((_, idx) => idx !== index));
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Construct form data
-    const formData = new FormData();
-    formData.append('itemName', itemName);
-    formData.append('itemDescription', itemDescription);
-    formData.append('itemPrice', itemPrice);
-    photos.forEach((photo) => {
-      formData.append('photos', photo);
-    });
-
-    // Implement logic for backend?
-    console.log('Form submitted', {
-      itemName, itemDescription, itemPrice, photos,
-    });
-
-    // Clear the form
-    setItemName('');
-    setItemDescription('');
-    setItemPrice('');
-    setPhotos([]);
-  };
 
   const navigate = useNavigate();
 
@@ -53,8 +24,94 @@ function AddItemPage() {
     navigate('/');
   };
 
+  const handlePhotoChange = async (event) => {
+    if (event.target.files && event.target.files.length > 0) {
+      // Initialize an array to hold the promises for file uploads
+      const uploadPromises = [];
+
+      // Process each file selected by the user
+      Array.from(event.target.files).forEach((file) => {
+        // Wrap onFileUpload call in a promise and add to the array
+        const uploadPromise = onFileUpload({ target: { files: [file] } });
+        uploadPromises.push(uploadPromise);
+      });
+
+      try {
+        // Wait for all file uploads to complete
+        const uploadedPhotoUrls = await Promise.all(uploadPromises);
+        // Filter out any nulls from failed uploads
+        const filteredUrls = uploadedPhotoUrls.filter((url) => url !== null);
+        // Update the component state with the new S3 URLs, in addition to any existing URLs
+        setPhotos((prevPhotos) => [...prevPhotos, ...filteredUrls]);
+      } catch (error) {
+        console.error('Error uploading one or more files:', error);
+      }
+    }
+  };
+
+  const handleRemovePhoto = (index) => {
+    setPhotos(photos.filter((_, idx) => idx !== index));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Check if necessary fields are filled
+    if (!itemName || !itemPrice || photos.length === 0) {
+      enqueueSnackbar('Please fill in all required fields and upload at least one photo.', { variant: 'error' });
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/items/additem`, {
+        price: itemPrice,
+        name: itemName,
+        description: itemDescription,
+        category: selectedCategory,
+        payment: selectedPayment,
+        delivery: selectedDelivery,
+        photos,
+        postedBy: user._id,
+      }, { withCredentials: true });
+
+      if (response.data) {
+        enqueueSnackbar('Item added successfully!', { variant: 'success' });
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Error adding item:', error);
+      enqueueSnackbar('Failed to add item. Please try again.', { variant: 'error' });
+    }
+  };
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const handlePaymentChange = (event) => {
+    setSelectedPayment(event.target.value);
+  };
+
+  const handleDeliveryChange = (event) => {
+    setSelectedDelivery(event.target.value);
+  };
+
   // this will ensure that you can add item only if you're logged in.
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+          const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
+              withCredentials: true,
+          });
+
+          if (userResponse) {
+              setUser(userResponse.data);
+          }
+      } catch (error) {
+          console.error('Error fetching user data: User is not logged in.', error);
+      }
+  };
+
     const fetchData = async () => {
       try {
         // Use axios to perform the GET request
@@ -73,6 +130,7 @@ function AddItemPage() {
       }
     };
 
+    fetchUser();
     fetchData(); // Call the async function
   }, [navigate]); // Add navigate as a dependency
 
@@ -142,15 +200,17 @@ function AddItemPage() {
                       className="w-full p-2 border border-black border-opacity-100 border-2 rounded font-inter"
                     />
                     <select
+                      value={selectedCategory}
+                      onChange={handleCategoryChange}
                       className="p-2 text-gray-500 border border-black border-opacity-100 border-2 rounded font-inter"
                     >
                       <option value="">Category</option>
-                      <option value="category1">Fashion</option>
-                      <option value="category2">Electronics</option>
-                      <option value="category3">Living</option>
-                      <option value="category4">Books</option>
-                      <option value="category5">Furniture</option>
-                      <option value="category6">Miscellaneous</option>
+                      <option value="fashion">Fashion</option>
+                      <option value="electronics">Electronics</option>
+                      <option value="living">Living</option>
+                      <option value="books">Books</option>
+                      <option value="furniture">Furniture</option>
+                      <option value="miscellaneous">Miscellaneous</option>
                     </select>
                   </div>
                 </div>
@@ -172,22 +232,26 @@ function AddItemPage() {
                     className="p-2 text-gray-500 border border-blue-900 border-opacity-100 border-2 rounded font-inter"
                   />
                   <select
+                  value={selectedPayment}
+                  onChange={handlePaymentChange}
                     className="p-2 text-gray-500 border border-blue-900 border-opacity-100 border-2 rounded font-inter"
                   >
                     <option value="">Preferred Payment Method</option>
-                    <option value="payment1">Venmo</option>
-                    <option value="payment2">Zelle</option>
-                    <option value="payment3">Cash</option>
-                    <option value="payment4">Credit Card</option>
-                    <option value="payment5">No Preference</option>
+                    <option value="venmo">Venmo</option>
+                    <option value="zelle">Zelle</option>
+                    <option value="cash">Cash</option>
+                    <option value="credit card">Credit Card</option>
+                    <option value="no preference">No Preference</option>
                   </select>
                   <select
+                  value={selectedDelivery}
+                  onChange={handleDeliveryChange}
                     className="p-2 text-gray-500 border border-blue-900 border-opacity-100 border-2 rounded font-inter"
                   >
                     <option value="">Delivery Method</option>
-                    <option value="delivery1">Meetup</option>
-                    <option value="delivery2">Shipping</option>
-                    <option value="delivery3">No Preference</option>
+                    <option value="meetup">Meetup</option>
+                    <option value="shipping">Shipping</option>
+                    <option value="no preference">No Preference</option>
                   </select>
                   <div className="flex justify-center">
                     <button type="submit" className="text-blue-900 border border-blue-900 border-2 px-6 py-2 rounded font-interextra">

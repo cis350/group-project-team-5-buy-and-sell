@@ -11,6 +11,7 @@ require('dotenv').config();
 
 // import external routes
 const awsRoutes = require('../routes/awsRoutes');
+const itemRoutes = require('../routes/itemRoutes');
 
 // Create a new express app
 const webapp = express();
@@ -30,6 +31,7 @@ webapp.use(bodyParser.json()); // Support JSON encoded bodies
 
 // declaration for using external routes (including AWS)
 webapp.use('/aws', awsRoutes);
+webapp.use('/items', itemRoutes);
 
 // Session configuration
 webapp.use(session({
