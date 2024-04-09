@@ -49,6 +49,7 @@ function RegistrationPage() {
     } catch (error) {
       // set the reisterError variable to true
       setRegisterError(true);
+      enqueueSnackbar('Registration Failed. Please check all the required fields.', { variant: 'error' });
       console.error('Registration error:', error.response ? error.response.data : error.message);
     }
   };
