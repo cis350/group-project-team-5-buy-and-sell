@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
-const itemSchema = mongoose.Schema({
+// const User = require('./userModel');
+
+const { Schema } = mongoose;
+
+const itemSchema = mongoose.Schema(
+{
     price: {
         type: Number,
         required: true,
@@ -10,25 +15,40 @@ const itemSchema = mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
+        default: '',
     },
     category: {
         type: String,
+        enum: ['fashion', 'electronics', 'living', 'books', 'furniture', 'miscellaneous'],
+        required: true,
+    },
+    payment: {
+        type: String,
+        enum: ['venmo', 'zelle', 'cash', 'credit card', 'no preference'],
         required: true,
     },
     delivery: {
         type: String,
-        enum: ['pickup', 'delivery'],
+        enum: ['meetup', 'shipping', 'no preference'],
         required: true,
     },
     numBookmarks: {
         type: Number,
         default: 0,
     },
+    postedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    photos: [{
+        type: String,
+        required: true,
+    }],
 },
 {
     timestamps: true,
-});
+},
+);
 
 const Item = mongoose.model('Item', itemSchema);
 module.exports = Item;

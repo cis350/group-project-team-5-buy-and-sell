@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
+
 const { Schema } = mongoose;
 
 const userSchema = mongoose.Schema(
@@ -39,7 +40,7 @@ const userSchema = mongoose.Schema(
         rating: {
             type: Number,
         },
-        ratingCount: {  
+        ratingCount: {
             type: Number,
         },
         nickname: {
@@ -54,8 +55,8 @@ const userSchema = mongoose.Schema(
         bookmarks: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'Item'
-            }
+                ref: 'Item',
+            },
         ],
     },
     {

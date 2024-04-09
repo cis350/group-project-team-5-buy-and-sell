@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 import AddItemPage from './pages/AddItemPage';
 import TestPage from './pages/TestPage';
+import ItemDetail from './pages/ItemDetail';
 import './App.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/registration" element={<RegistrationPage />} />
           <Route path="/additem" element={<AddItemPage />} />
           <Route path="/test" element={<TestPage />} />
+          <Route path="/item/:itemId" element={<ItemDetail />} />
         </Routes>
       </AnimatePresence>
     </SnackbarProvider>

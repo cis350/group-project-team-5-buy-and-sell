@@ -26,6 +26,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'no-console': ['error', { allow: ['warn', 'error'] }],
     indent: 'off',
+    'no-underscore-dangle': 'off',
     // suppress errors for missing 'import React' in files
     'react/react-in-jsx-scope': 'off',
     'react/jsx-indent': 'off',
