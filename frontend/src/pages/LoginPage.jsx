@@ -10,6 +10,9 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const { enqueueSnackbar } = useSnackbar();
 
+  // define state variable for login errror
+  const [loginError, setLoginError] = useState(false);
+
   const navigate = useNavigate();
   // function to navigate to the registration page
   const goRegistration = () => {
@@ -40,10 +43,13 @@ function LoginPage() {
       enqueueSnackbar('Successfully Logged In!', { variant: 'success' });
       // Handle success (e.g., navigate to another page, store the login token, etc.)
       goHome();
+      setLoginError(false); // Reset login error on successful login
     } catch (error) {
       // setLoginFailure(true);
       console.error('Login error:', error.response ? error.response.data : error.message);
       // Handle error (e.g., display an error message)
+      setLoginError(true); // Set login error on failure
+      enqueueSnackbar('Login Failed. Please check your username and password.', { variant: 'error' });
     }
   };
 
@@ -119,6 +125,11 @@ function LoginPage() {
           className="justify-center items-start px-4 py-3 mt-4 max-w-full text-base font-inter leading-6 whitespace-nowrap bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5"
           placeholder="Password"
           />
+          {loginError && (
+            <div className="justify-center items-start px-4 py-2 mt-4 mr-0 font-inter text-base bg-white border border-red-500 border-solid text-red-500 rounded">
+              Invalid username or password. Please try again.
+            </div>
+          )}
           <button
           type="button"
           onClick={apiLoginRequest}
