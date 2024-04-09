@@ -5,8 +5,23 @@ import Navbar from '../components/Navbar';
 
 function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
+                    withCredentials: true,
+                });
+
+                if (userResponse) {
+                    setUser(userResponse.data);
+                }
+            } catch (error) {
+                console.error('Error fetching user data: User is not logged in.', error);
+            }
+        };
+
         const fetchData = async () => {
             try {
                 // Use axios to perform the GET request
@@ -19,10 +34,11 @@ function Home() {
                     setIsLoggedIn(true);
                 }
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('Error fetching login status:', error);
             }
         };
 
+        fetchUser();
         fetchData(); // Call the async function
     }, []);
 
@@ -58,10 +74,13 @@ function Home() {
                         </div>
                     </div>
                 </div>
-                <div className="text-center">
+                <div className="text-center mt-4">
                     {isLoggedIn ? (
                         <h1 className="font-interlight text-center text-xl font-bold mb-6">
-                            Welcome!
+                            Welcome
+                            {' '}
+                            {user.firstName}
+                            !
                         </h1>
                     ) : (
                         <h1 className="font-interlight text-center text-xl font-bold mb-6">
