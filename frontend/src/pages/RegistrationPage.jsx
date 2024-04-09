@@ -134,11 +134,18 @@ function RegistrationPage() {
           className="justify-center items-start px-4 py-3 mt-5 max-w-full text-base font-inter leading-6 whitespace-nowrap bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5"
           placeholder="Password"
         />
-        {registerError ? <div>Something Wrong Happened.</div> : <div />}
+        {registerError ? (
+                        <div
+                            type="email"
+                            className="justify-center items-start px-4 py-2 mt-4 mr-0 font-inter text-base bg-white border border-penn-red border-solid text-penn-red rounded"
+                        >
+                            You entered invalid information
+                        </div>
+                    ) : (<div />)}
         <button
           type="button"
           onClick={apiRegisterRequest}
-          className="transition ease-in-out delay-50 hover:bg-blue-700 justify-center px-6 py-3.5 mt-9 text-xl font-interextra leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5"
+          className="transition ease-in-out delay-50 hover:bg-blue-700 justify-center px-6 py-3.5 mt-7 text-xl font-interextra leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5"
         >
           Create personal account
         </button>
