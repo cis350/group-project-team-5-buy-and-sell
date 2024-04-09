@@ -124,6 +124,15 @@ webapp.post('/logout', (req, res, next) => {
     });
 });
 
+// protected endpoint to fetch user info
+webapp.get('/userinfo', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.json(req.user); // Send user information as a response
+    } else {
+        res.status(401).send('You are not authenticated');
+    }
+});
+
 // Root endpoint
 webapp.get('/', (req, res) => res.status(200).json({ message: 'Successfully Connected' }));
 
