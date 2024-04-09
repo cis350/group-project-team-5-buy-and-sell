@@ -1,10 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { useSnackbar } from 'notistack';
 
 function RegistrationPage() {
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
+  // variable definition
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [firstName, setFirstname] = useState('');
+  const [lastName, setLastname] = useState('');
+  const [registerError, setRegisterError] = useState(false);
+
   // function to navigate to the registration page
   const goLogin = () => {
     navigate('/login');
@@ -12,6 +23,34 @@ function RegistrationPage() {
 
   const goHome = () => {
     navigate('/');
+  };
+
+  // Utility function to create a promise that rejects after a timeout
+  const timeout = (delay) => new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(new Error('Request timed out'));
+    }, delay);
+  });
+
+  const apiRegisterRequest = async () => {
+    try {
+      await Promise.race([
+        axios.post(`${import.meta.env.VITE_API_URL}/register`, {
+          email,
+          username,
+          firstName,
+          lastName,
+          password,
+        }, { withCredentials: true }),
+        timeout(3000),
+      ]);
+      enqueueSnackbar('Successfully Registered!', { variant: 'success' });
+      goHome();
+    } catch (error) {
+      // set the reisterError variable to true
+      setRegisterError(true);
+      console.error('Registration error:', error.response ? error.response.data : error.message);
+    }
   };
 
   // If the user is already logged in, we want to redirect automatically to the home page
@@ -63,11 +102,13 @@ function RegistrationPage() {
         <div className="flex gap-2 mt-9 w-[469px] max-md:pr-5 text-base font-inter leading-6 text-zinc-500 justify-between">
           <input
             type="First Name"
+            onChange={(e) => setFirstname(e.target.value)}
             className="justify-center w-[230px] max-md:pr-5 px-4 py-3 bg-white rounded-lg border border-black border-solid shadow-sm"
             placeholder="First Name"
           />
           <input
             type="Last Name"
+            onChange={(e) => setLastname(e.target.value)}
             className="justify-center w-[234px] max-md:pr-5 px-4 py-3 bg-white rounded-lg border border-black border-solid shadow-sm"
             placeholder="Last Name"
           />
@@ -75,24 +116,36 @@ function RegistrationPage() {
         {/* Username Input */}
         <input
           type="username"
+          onChange={(e) => setUsername(e.target.value)}
           className="justify-center items-start px-4 py-3 mt-6 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5"
           placeholder="Username"
         />
         {/* School Email Input */}
         <input
           type="email"
+          onChange={(e) => setEmail(e.target.value)}
           className="justify-center items-start px-4 py-3 mt-6 max-w-full text-base font-inter leading-6 bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5"
           placeholder="School Email"
         />
         {/* Password Input */}
         <input
           type="password"
+          onChange={(e) => setPassword(e.target.value)}
           className="justify-center items-start px-4 py-3 mt-5 max-w-full text-base font-inter leading-6 whitespace-nowrap bg-white rounded-lg border border-black border-solid shadow-sm text-zinc-500 w-[469px] max-md:pr-5"
           placeholder="Password"
         />
+        {registerError ? (
+                        <div
+                            type="email"
+                            className="justify-center items-start px-4 py-2 mt-4 mr-0 font-inter text-base bg-white border border-penn-red border-solid text-penn-red rounded"
+                        >
+                            You entered invalid information
+                        </div>
+                    ) : (<div />)}
         <button
           type="button"
-          className="transition ease-in-out delay-50 hover:bg-blue-700 justify-center px-6 py-3.5 mt-9 text-xl font-interextra leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5"
+          onClick={apiRegisterRequest}
+          className="transition ease-in-out delay-50 hover:bg-blue-700 justify-center px-6 py-3.5 mt-7 text-xl font-interextra leading-8 text-white rounded-lg shadow-sm bg-blue-950 max-md:px-5"
         >
           Create personal account
         </button>

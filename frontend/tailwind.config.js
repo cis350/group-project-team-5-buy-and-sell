@@ -9,6 +9,7 @@ export default {
       // Adding Custom Colors: Define Custom Colors Here
       colors: {
         'penn-blue': '#011F5B',
+        'penn-red': '#DD5F5F',
       },
       // Define Custom Fonts Here
       fontFamily: {
