@@ -5,9 +5,10 @@ const cors = require('cors');
 const passport = require('passport');
 const MongoStore = require('connect-mongo');
 const cookieParser = require('cookie-parser');
-const User = require('../models/userModel'); // Adjust the path as necessary
 const { mongoDBURL } = require('../config');
 require('dotenv').config();
+
+const userOperations = require('../db/userOperations');
 
 // import external routes
 const awsRoutes = require('../routes/awsRoutes');
@@ -54,61 +55,46 @@ webapp.use(session({
 webapp.use(passport.initialize());
 webapp.use(passport.session());
 
-// Passport configuration with passport-local-mongoose
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-// Registration endpoint
-webapp.post('/register', (req, res) => {
-    User.register(new User({
-        email: req.body.email,
-        username: req.body.username,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-    }), req.body.password, (err, user) => {
-        if (err) {
-            return res.status(401).json({ success: false, message: 'Your account could not be registered.' });
-        }
-        req.login(user, (error) => {
-            if (error) {
-                return res.status(401).json({ success: false, message: error });
-            }
-            return res.status(201).json({ success: true, message: 'Your account has been saved' });
-        });
-        return false;
-    });
+/**
+ * Endpoint for user registration.
+ * @name POST /register
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object with success status and message.
+ */
+webapp.post('/register', async (req, res) => {
+    try {
+        await userOperations.registerUser({
+            email: req.body.email,
+            username: req.body.username,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+        }, req.body.password);
+    } catch (error) {
+        // console.log(error);
+        return res.status(401).json({ success: false, message: 'Your account could not be registered.' });
+    }
+    return res.status(201).json({ success: true, message: 'Your account has been saved' });
 });
 
-// Login endpoint
+/**
+ * Endpoint for user login.
+ * @name POST /login
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 webapp.post('/login', (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
-            return res.status(401).json({ success: false, message: info.message || 'Login failed' });
-        }
-        req.logIn(user, (error) => {
-            if (error) {
-                return next(error);
-            }
-            // Manually save the session before sending the response
-            req.session.save((saveErr) => {
-                if (saveErr) {
-                    return next(saveErr); // handle session save error
-                }
-                // Session saved successfully, send response
-                res.status(201).send(user);
-                return false;
-            });
-        return false;
-        });
-        return false;
-    })(req, res, next);
+    userOperations.authenticateUser(req, res, next);
 });
 
-// Route to check if user is logged in
+/**
+ * Endpoint to check if user is logged in.
+ * @name GET /register
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object with success status and message.
+ */
 webapp.get('/register', (req, res) => {
     if (req.isAuthenticated()) {
         return res.status(200).json({ success: true, message: 'User is logged in' });
@@ -116,7 +102,13 @@ webapp.get('/register', (req, res) => {
     return res.status(200).json({ success: true, message: 'User is not logged in' });
 });
 
-// Logout endpoint
+/**
+ * Endpoint for user logout.
+ * @name POST /logout
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 webapp.post('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) { return next(err); }
@@ -126,7 +118,13 @@ webapp.post('/logout', (req, res, next) => {
     });
 });
 
-// protected endpoint to fetch user info
+/**
+ * Endpoint to fetch user information, protected.
+ * @name GET /userinfo
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object with user information or error message.
+ */
 webapp.get('/userinfo', (req, res) => {
     if (req.isAuthenticated()) {
         res.json(req.user); // Send user information as a response
@@ -135,7 +133,13 @@ webapp.get('/userinfo', (req, res) => {
     }
 });
 
-// Root endpoint
+/**
+ * The root endpoint.
+ * @name GET /
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object with a success message.
+ */
 webapp.get('/', (req, res) => res.status(200).json({ message: 'Successfully Connected' }));
 
 // Export the webapp
