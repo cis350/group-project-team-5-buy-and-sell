@@ -5,7 +5,6 @@ const cors = require('cors');
 const passport = require('passport');
 const MongoStore = require('connect-mongo');
 const cookieParser = require('cookie-parser');
-const User = require('../models/userModel'); // Adjust the path as necessary
 const { mongoDBURL } = require('../config');
 require('dotenv').config();
 
@@ -56,11 +55,6 @@ webapp.use(session({
 webapp.use(passport.initialize());
 webapp.use(passport.session());
 
-// Passport configuration with passport-local-mongoose
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
 // Registration endpoint
 webapp.post('/register', async (req, res) => {
     try {
@@ -70,10 +64,11 @@ webapp.post('/register', async (req, res) => {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
         }, req.body.password);
-        req.login(user, (error) => {
-            if (error) return res.status(401).json({ success: false, message: error });
-            return res.status(201).json({ success: true, message: 'Your account has been saved' });
-        });
+        // req.login(user, (error) => {
+        //     if (error) return res.status(401).json({ success: false, message: error });
+        // eslint-disable-next-line max-len
+        //     return res.status(201).json({ success: true, message: 'Your account has been saved' });
+        // });
     } catch (error) {
         // console.log(error);
         return res.status(401).json({ success: false, message: 'Your account could not be registered.' });
@@ -83,30 +78,7 @@ webapp.post('/register', async (req, res) => {
 
 // Login endpoint
 webapp.post('/login', (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
-            return res.status(401).json({ success: false, message: info.message || 'Login failed' });
-        }
-        req.logIn(user, (error) => {
-            if (error) {
-                return next(error);
-            }
-            // Manually save the session before sending the response
-            req.session.save((saveErr) => {
-                if (saveErr) {
-                    return next(saveErr); // handle session save error
-                }
-                // Session saved successfully, send response
-                res.status(201).send(user);
-                return false;
-            });
-        return false;
-        });
-        return false;
-    })(req, res, next);
+    userOperations.authenticateUser(req, res, next);
 });
 
 // Route to check if user is logged in
