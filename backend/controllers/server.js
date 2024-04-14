@@ -9,6 +9,8 @@ const User = require('../models/userModel'); // Adjust the path as necessary
 const { mongoDBURL } = require('../config');
 require('dotenv').config();
 
+const userOperations = require('../db/userOperations');
+
 // import external routes
 const awsRoutes = require('../routes/awsRoutes');
 const itemRoutes = require('../routes/itemRoutes');
@@ -60,24 +62,23 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // Registration endpoint
-webapp.post('/register', (req, res) => {
-    User.register(new User({
-        email: req.body.email,
-        username: req.body.username,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-    }), req.body.password, (err, user) => {
-        if (err) {
-            return res.status(401).json({ success: false, message: 'Your account could not be registered.' });
-        }
+webapp.post('/register', async (req, res) => {
+    try {
+        const user = await userOperations.registerUser({
+            email: req.body.email,
+            username: req.body.username,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+        }, req.body.password);
         req.login(user, (error) => {
-            if (error) {
-                return res.status(401).json({ success: false, message: error });
-            }
+            if (error) return res.status(401).json({ success: false, message: error });
             return res.status(201).json({ success: true, message: 'Your account has been saved' });
         });
-        return false;
-    });
+    } catch (error) {
+        // console.log(error);
+        return res.status(401).json({ success: false, message: 'Your account could not be registered.' });
+    }
+    return res.status(201).json({ success: true, message: 'Your account has been saved' });
 });
 
 // Login endpoint
