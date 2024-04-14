@@ -55,7 +55,13 @@ webapp.use(session({
 webapp.use(passport.initialize());
 webapp.use(passport.session());
 
-// Registration endpoint
+/**
+ * Endpoint for user registration.
+ * @name POST /register
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object with success status and message.
+ */
 webapp.post('/register', async (req, res) => {
     try {
         await userOperations.registerUser({
@@ -71,12 +77,24 @@ webapp.post('/register', async (req, res) => {
     return res.status(201).json({ success: true, message: 'Your account has been saved' });
 });
 
-// Login endpoint
+/**
+ * Endpoint for user login.
+ * @name POST /login
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 webapp.post('/login', (req, res, next) => {
     userOperations.authenticateUser(req, res, next);
 });
 
-// Route to check if user is logged in
+/**
+ * Endpoint to check if user is logged in.
+ * @name GET /register
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object with success status and message.
+ */
 webapp.get('/register', (req, res) => {
     if (req.isAuthenticated()) {
         return res.status(200).json({ success: true, message: 'User is logged in' });
@@ -84,7 +102,13 @@ webapp.get('/register', (req, res) => {
     return res.status(200).json({ success: true, message: 'User is not logged in' });
 });
 
-// Logout endpoint
+/**
+ * Endpoint for user logout.
+ * @name POST /logout
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 webapp.post('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) { return next(err); }
@@ -94,7 +118,13 @@ webapp.post('/logout', (req, res, next) => {
     });
 });
 
-// protected endpoint to fetch user info
+/**
+ * Endpoint to fetch user information, protected.
+ * @name GET /userinfo
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object with user information or error message.
+ */
 webapp.get('/userinfo', (req, res) => {
     if (req.isAuthenticated()) {
         res.json(req.user); // Send user information as a response
@@ -103,7 +133,13 @@ webapp.get('/userinfo', (req, res) => {
     }
 });
 
-// Root endpoint
+/**
+ * The root endpoint.
+ * @name GET /
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Object} The response object with a success message.
+ */
 webapp.get('/', (req, res) => res.status(200).json({ message: 'Successfully Connected' }));
 
 // Export the webapp
