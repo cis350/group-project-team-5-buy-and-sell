@@ -58,17 +58,12 @@ webapp.use(passport.session());
 // Registration endpoint
 webapp.post('/register', async (req, res) => {
     try {
-        const user = await userOperations.registerUser({
+        await userOperations.registerUser({
             email: req.body.email,
             username: req.body.username,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
         }, req.body.password);
-        // req.login(user, (error) => {
-        //     if (error) return res.status(401).json({ success: false, message: error });
-        // eslint-disable-next-line max-len
-        //     return res.status(201).json({ success: true, message: 'Your account has been saved' });
-        // });
     } catch (error) {
         // console.log(error);
         return res.status(401).json({ success: false, message: 'Your account could not be registered.' });
