@@ -7,9 +7,10 @@ const { getUserByUsername } = require('../models/users'); // Adjust the path acc
  * @param {string} username
  * @returns {string} JWT token
  */
-const authenticateUser = (username) => {
+const authenticateUser = (username, id) => {
     try {
-        const token = jwt.sign({ username }, process.env.JWT_SECRET_KEY, { expiresIn: '120s' });
+        // eslint-disable-next-line no-underscore-dangle
+        const token = jwt.sign({ username, id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
         console.log('token', token);
         return token;
     } catch (err) {
@@ -41,4 +42,23 @@ const verifyUser = async (token) => {
     }
 };
 
-module.exports = { authenticateUser, verifyUser };
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer Token
+
+    if (!token) {
+        return res.status(401).json({ error: 'No token provided' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ error: 'Failed to authenticate token' });
+        }
+
+        req.userId = decoded.id;
+        req.username = decoded.username;
+        next();
+    });
+};
+
+module.exports = { authenticateUser, verifyUser, verifyToken };

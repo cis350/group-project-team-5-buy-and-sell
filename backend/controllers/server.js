@@ -3,14 +3,26 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
 
-const { authenticateUser } = require('./auth');
+const { authenticateUser, verifyToken } = require('./auth');
 const users = require('../models/users'); // Assume you have CRUD operations and user fetching in this file
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+    origin(origin, callback) {
+        const allowedOrigins = ['https://group-project-team-5-buy-and-sell.vercel.app', 'http://localhost:5173'];
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS policy violation'), false);
+        }
+    },
+    credentials: true, // Allow credentials
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
+    allowedHeaders: 'Content-Type,Authorization', // Allowed custom headers
+}));
 
 // Login endpoint
 app.post('/login', async (req, res) => {
@@ -27,7 +39,7 @@ app.post('/login', async (req, res) => {
             res.status(401).json({ error: 'Username or password is incorrect' });
         }
         if (await bcrypt.compare(password, user.password)) {
-            const accessToken = authenticateUser(user.username);
+            const accessToken = authenticateUser(user.username, user._id);
             res.status(201).json({ accessToken });
         } else {
             res.status(401).json({ error: 'Username or password is incorrect' });
@@ -114,5 +126,32 @@ app.delete('/user/:id', async (req, res) => {
 app.get('/', (req, res) => {
     res.json({ message: 'Connected to PennMarket Backend' });
 });
+
+app.get('/protected-route', verifyToken, (req, res) => {
+    res.json({ message: 'Welcome to the protected route!', user: req.user });
+});
+
+// GET /userinfo endpoint to return user's first name, username, and ObjectId
+app.get('/userinfo', verifyToken, async (req, res) => {
+    try {
+        // Assuming req.user is set in your verifyToken middleware and contains the username
+        const user = await users.getUserByUsername(req.username); // Ensure this function is awaited
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Send back the user's first name, username, and ObjectId
+        res.json({
+            firstName: user.firstName,
+            username: user.username,
+            id: user._id.toString(), // Ensure the ObjectId is converted to string if necessary
+        });
+    } catch (error) {
+        console.error('Failed to fetch user info:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 module.exports = app;

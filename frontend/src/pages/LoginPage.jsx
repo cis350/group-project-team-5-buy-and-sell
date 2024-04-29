@@ -32,46 +32,62 @@ function LoginPage() {
 
   const apiLoginRequest = async () => {
     try {
-      await Promise.race([
+      const response = await Promise.race([
         axios.post(`${import.meta.env.VITE_API_URL}/login`, {
           username,
           password,
         }, { withCredentials: true }),
         timeout(3000), // 3000 milliseconds = 3 seconds
       ]);
-      // setLoginFailure(false);
+
+      // Extract the access token from the response
+      const { accessToken } = response.data;
+
+      // Store the token in localStorage or another secure place
+      localStorage.setItem('accessToken', accessToken);
+
       enqueueSnackbar('Successfully Logged In!', { variant: 'success' });
-      // Handle success (e.g., navigate to another page, store the login token, etc.)
+
+      // Reset login error on successful login
+      setLoginError(false);
+
+      // Navigate to the home page or another appropriate page
       goHome();
-      setLoginError(false); // Reset login error on successful login
     } catch (error) {
-      // setLoginFailure(true);
       console.error('Login error:', error.response ? error.response.data : error.message);
-      // Handle error (e.g., display an error message)
       setLoginError(true); // Set login error on failure
       enqueueSnackbar('Login Failed. Please check your username and password.', { variant: 'error' });
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const checkUserLoggedIn = async () => {
       try {
-        // Use axios to perform the GET request
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/register`, {
-          withCredentials: true,
+        // Retrieve the token from local storage
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          return; // If no token, the user is not logged in
+        }
+
+        // Use axios to perform the GET request to check if user is logged in
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
         });
 
-        // Check if the user is logged in based on the response
-        if (response.data.success && response.data.message === 'User is logged in') {
+        // If the request is successful, redirect to the homepage
+        if (response.status === 200) {
           navigate('/'); // Redirect to home if logged in
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
+        // If error (like 401), consider the user not logged in
       }
     };
 
-    fetchData(); // Call the async function
-  }, [navigate]); // Add navigate as a dependency
+    checkUserLoggedIn(); // Call the async function to check login status
+  }, [navigate]);
 
   return (
     <motion.div

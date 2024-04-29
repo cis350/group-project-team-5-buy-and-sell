@@ -10,36 +10,33 @@ function Home() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
-                    withCredentials: true,
-                });
-
-                if (userResponse) {
-                    setUser(userResponse.data);
+                // Retrieve the token from local storage
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    return; // Early exit if no token is stored, indicating user is not logged in
                 }
-            } catch (error) {
-                console.error('Error fetching user data: User is not logged in.', error);
-            }
-        };
 
-        const fetchData = async () => {
-            try {
-                // Use axios to perform the GET request
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/register`, {
-                    withCredentials: true,
+                const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    },
                 });
 
-                // Check if the user is logged in based on the response
-                if (response.data.success && response.data.message === 'User is logged in') {
+                // Assuming the backend sends the user data on successful authentication
+                if (userResponse && userResponse.data) {
+                    setUser(userResponse.data); // Set the user data in your state or context
                     setIsLoggedIn(true);
                 }
             } catch (error) {
-                console.error('Error fetching login status:', error);
+                if (error.response && error.response.status === 401) {
+                    console.error('Authentication error: User is not logged in.', error.response.data);
+                } else {
+                    console.error('Error fetching user data:', error.message);
+                }
             }
         };
 
         fetchUser();
-        fetchData(); // Call the async function
     }, []);
 
     return (

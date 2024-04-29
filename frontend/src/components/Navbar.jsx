@@ -27,13 +27,11 @@ function Navbar() {
     const handleLogout = async () => {
         try {
             // Use axios to perform the logout request
-            await axios.post(`${import.meta.env.VITE_API_URL}/logout`, {}, {
-                withCredentials: true,
-            }).then(() => {
-                enqueueSnackbar('Successfully Logged Out!', { variant: 'success' });
-            });
+            localStorage.removeItem('accessToken');
+
             // Update isLoggedIn state
             setIsLoggedIn(false);
+            enqueueSnackbar('Successfully Logged Out!', { variant: 'success' });
             // Optionally, redirect the user to the home page or login page
             navigate('/login');
         } catch (error) {
@@ -42,24 +40,33 @@ function Navbar() {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Use axios to perform the GET request
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/register`, {
-                    withCredentials: true,
-                });
-
-                // Check if the user is logged in based on the response
-                if (response.data.success && response.data.message === 'User is logged in') {
-                    setIsLoggedIn(true);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
+        const checkUserLoggedIn = async () => {
+          try {
+            // Retrieve the token from local storage
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+              return; // If no token, the user is not logged in
             }
+
+            // Use axios to perform the GET request to check if user is logged in
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
+              headers: {
+                Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+              },
+            });
+
+            // If the request is successful, redirect to the homepage
+            if (response.status === 200) {
+                setIsLoggedIn(true);
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+            // If error (like 401), consider the user not logged in
+          }
         };
 
-        fetchData(); // Call the async function
-    }, []);
+        checkUserLoggedIn(); // Call the async function to check login status
+      }, []);
 
     return (
         <nav className="bg-white top-0 w-full z-10 p-8">
