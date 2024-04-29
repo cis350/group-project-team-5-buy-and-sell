@@ -72,7 +72,11 @@ function AddItemPage() {
         delivery: selectedDelivery,
         photos,
         postedBy: user._id,
-      }, { withCredentials: true });
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+        },
+      });
 
       if (response.data) {
         enqueueSnackbar('Item added successfully!', { variant: 'success' });
@@ -98,40 +102,32 @@ function AddItemPage() {
 
   // this will ensure that you can add item only if you're logged in.
   useEffect(() => {
-    const fetchUser = async () => {
+    const checkUserLoggedIn = async () => {
       try {
-          const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
-              withCredentials: true,
-          });
-
-          if (userResponse) {
-              setUser(userResponse.data);
-          }
-      } catch (error) {
-          console.error('Error fetching user data: User is not logged in.', error);
-      }
-  };
-
-    const fetchData = async () => {
-      try {
-        // Use axios to perform the GET request
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/register`, {
-          withCredentials: true,
-        });
-
-        // Check if the user is logged in based on the response
-        if (response.data.success && response.data.message === 'User is not logged in') {
-          // alert the user with the informative message.
+        // Retrieve the token from local storage
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          // If no token, the user is not logged in
           goHome();
           enqueueSnackbar('Please log in first.', { variant: 'warning' });
         }
+
+        const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        });
+
+        // Assuming the backend sends the user data on successful authentication
+        if (userResponse && userResponse.data) {
+          setUser(userResponse.data); // Set the user data in your state or context
+        }
       } catch (error) {
         console.error('Error fetching user data:', error);
+        // If error (like 401), consider the user not logged in
       }
     };
-
-    fetchUser();
-    fetchData(); // Call the async function
+    checkUserLoggedIn();
   }, [navigate]); // Add navigate as a dependency
 
   return (
@@ -232,8 +228,8 @@ function AddItemPage() {
                     className="p-2 text-gray-500 border border-blue-900 border-opacity-100 border-2 rounded font-inter"
                   />
                   <select
-                  value={selectedPayment}
-                  onChange={handlePaymentChange}
+                    value={selectedPayment}
+                    onChange={handlePaymentChange}
                     className="p-2 text-gray-500 border border-blue-900 border-opacity-100 border-2 rounded font-inter"
                   >
                     <option value="">Preferred Payment Method</option>
@@ -244,8 +240,8 @@ function AddItemPage() {
                     <option value="no preference">No Preference</option>
                   </select>
                   <select
-                  value={selectedDelivery}
-                  onChange={handleDeliveryChange}
+                    value={selectedDelivery}
+                    onChange={handleDeliveryChange}
                     className="p-2 text-gray-500 border border-blue-900 border-opacity-100 border-2 rounded font-inter"
                   >
                     <option value="">Delivery Method</option>

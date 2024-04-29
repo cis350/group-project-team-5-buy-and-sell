@@ -6,6 +6,10 @@ const dotenv = require('dotenv');
 const { authenticateUser, verifyToken } = require('./auth');
 const users = require('../models/users'); // Assume you have CRUD operations and user fetching in this file
 
+// import external routes
+const awsRoutes = require('../routes/awsRoutes');
+const itemRoutes = require('../routes/itemRoutes');
+
 dotenv.config();
 const app = express();
 app.use(express.json());
@@ -23,6 +27,10 @@ app.use(cors({
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
     allowedHeaders: 'Content-Type,Authorization', // Allowed custom headers
 }));
+
+// declaration for using external routes (including AWS)
+app.use('/aws', awsRoutes);
+app.use('/items', itemRoutes);
 
 // Login endpoint
 app.post('/login', async (req, res) => {
