@@ -7,7 +7,8 @@ import RegistrationPage from './pages/RegistrationPage';
 import AddItemPage from './pages/AddItemPage';
 import TestPage from './pages/TestPage';
 import ItemDetail from './pages/ItemDetail';
-import './App.css';
+import ProfilePage from './pages/ProfilePage';
+import ItemDescription from './pages/ItemDescriptionPage';
 
 function App() {
   return (
@@ -20,6 +21,8 @@ function App() {
           <Route path="/additem" element={<AddItemPage />} />
           <Route path="/test" element={<TestPage />} />
           <Route path="/item/:itemId" element={<ItemDetail />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/itemdescription" element={<ItemDescription />} />
         </Routes>
       </AnimatePresence>
     </SnackbarProvider>
