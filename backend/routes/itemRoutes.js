@@ -42,7 +42,7 @@ router.post('/additem', async (req, res) => {
 
 // Get an item by its ID
 router.get('/:itemId', async (req, res) => {
-    if (!req.user) {
+    if (!req.userId) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
