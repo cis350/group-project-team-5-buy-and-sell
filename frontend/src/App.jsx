@@ -6,7 +6,6 @@ import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 import AddItemPage from './pages/AddItemPage';
 import TestPage from './pages/TestPage';
-import ItemDetail from './pages/ItemDetail';
 import ProfilePage from './pages/ProfilePage';
 import ItemDescription from './pages/ItemDescriptionPage';
 
@@ -20,9 +19,8 @@ function App() {
           <Route path="/registration" element={<RegistrationPage />} />
           <Route path="/additem" element={<AddItemPage />} />
           <Route path="/test" element={<TestPage />} />
-          <Route path="/item/:itemId" element={<ItemDetail />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/itemdescription" element={<ItemDescription />} />
+          <Route path="/itemdescription/:itemId" element={<ItemDescription />} />
         </Routes>
       </AnimatePresence>
     </SnackbarProvider>
