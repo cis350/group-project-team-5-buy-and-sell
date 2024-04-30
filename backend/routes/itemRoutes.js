@@ -1,52 +1,64 @@
 const express = require('express');
-const Item = require('../models/itemModel'); // Adjust the path as necessary
+const { ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
+const { getDB } = require('../models/dbUtils'); // Utility to get DB instance
+const { verifyToken } = require('../controllers/auth'); // Assuming this is a middleware to verify JWTs
 
 const router = express.Router();
 
+// Middleware to verify JWT and add user to request
+router.use(verifyToken);
+
+// Add an item
 router.post('/additem', async (req, res) => {
+    if (!req.userId) {
+        return res.status(401).json({ message: 'Unauthorized: userId does not exist' });
+    }
+
+    const db = await getDB();
+    const itemsCollection = db.collection('items');
+
     try {
-        // Create a new item using the data in req.body
-        const newItem = new Item({
+        const newItem = {
             price: req.body.price,
             name: req.body.name,
             description: req.body.description,
             category: req.body.category,
             payment: req.body.payment,
             delivery: req.body.delivery,
-            postedBy: req.body.postedBy,
+            postedBy: req.userId,
             photos: req.body.photos, // Array of photo URLs
-        });
+            createdAt: new Date(), // Adding creation timestamp
+        };
 
-        // Save the new item to the database
-        await newItem.save();
+        const result = await itemsCollection.insertOne(newItem);
+        //item: result.ops[0] 
 
-        // Send a response to the client
-        res.status(201).json({ message: 'Item added successfully', item: newItem });
+        res.status(201).json({ message: 'Item added successfully' });
     } catch (error) {
-        // If there's an error, send a 400 response with the error message
-        res.status(400).json({ message: 'Error adding item', error: error.message });
+        res.status(400).json({ message: 'Error adding item to database', error: error.message });
     }
 });
 
-// Route to get an item by its ID
+// Get an item by its ID
 router.get('/:itemId', async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const db = await getDB();
+    const itemsCollection = db.collection('items');
+
     try {
-        // Extract the itemId from the request parameters
-        const { itemId } = req.params;
+        const item = await itemsCollection.findOne({ _id: new ObjectId(req.params.itemId) });
 
-        // Find the item in the database by its ID
-        const item = await Item.findById(itemId);
-
-        // If no item was found, return a 404 response
         if (!item) {
             res.status(404).json({ message: 'Item not found' });
+        } else {
+            res.json(item);
         }
-
-        // If the item was found, return it in the response
-        res.json(item);
     } catch (error) {
         console.error('Error fetching item:', error);
-        // Return a 500 response if an error occurs
         res.status(500).json({ error: 'Error fetching item' });
     }
 });

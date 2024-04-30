@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "nodemon index.js",
-    "test": "jest --coverage --detectOpenHandles --forceExit",
+    "test": "jest --coverage --detectOpenHandles",
     "dev": "nodemon index.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },

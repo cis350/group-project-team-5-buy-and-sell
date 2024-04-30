@@ -1,146 +1,165 @@
 const express = require('express');
-const session = require('express-session');
-const bodyParser = require('body-parser');
 const cors = require('cors');
-const passport = require('passport');
-const MongoStore = require('connect-mongo');
-const cookieParser = require('cookie-parser');
-const { mongoDBURL } = require('../config');
-require('dotenv').config();
+const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
 
-const userOperations = require('../db/userOperations');
+const { authenticateUser, verifyToken } = require('./auth');
+const users = require('../models/users'); // Assume you have CRUD operations and user fetching in this file
 
 // import external routes
 const awsRoutes = require('../routes/awsRoutes');
 const itemRoutes = require('../routes/itemRoutes');
 
-// Create a new express app
-const webapp = express();
-// Trust the proxy for secure cookies and session management
-
-webapp.enable('trust proxy'); // add this line
-webapp.use(cookieParser());
-
-// Enable CORS and body parsing
-webapp.use(cors({
-    origin: ['https://group-project-team-5-buy-and-sell.vercel.app', 'http://localhost:5173'],
-    credentials: true,
+dotenv.config();
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin(origin, callback) {
+        const allowedOrigins = ['https://group-project-team-5-buy-and-sell.vercel.app', 'http://localhost:5173'];
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS policy violation'), false);
+        }
+    },
+    credentials: true, // Allow credentials
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
+    allowedHeaders: 'Content-Type,Authorization', // Allowed custom headers
 }));
-
-webapp.use(bodyParser.urlencoded({ extended: false }));
-webapp.use(bodyParser.json()); // Support JSON encoded bodies
 
 // declaration for using external routes (including AWS)
-webapp.use('/aws', awsRoutes);
-webapp.use('/items', itemRoutes);
+app.use('/aws', awsRoutes);
+app.use('/items', itemRoutes);
 
-// Session configuration
-webapp.use(session({
-    secret: 'real secret key',
-    resave: false,
-    saveUninitialized: true,
-    store: MongoStore.create({
-        mongoUrl: mongoDBURL,
-        collectionName: 'sessions',
-    }),
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // Only set secure cookies in production
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // Sets cookie to expire after 24 hours
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust for local development
-    },
-}));
+// Login endpoint
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    // return failure if username or password is missing
+    if (!username || !password) {
+        res.status(401).json({ error: 'Username or password is missing' });
+        return;
+    }
 
-// Initialize Passport and restore authentication state, if any, from the session
-webapp.use(passport.initialize());
-webapp.use(passport.session());
-
-/**
- * Endpoint for user registration.
- * @name POST /register
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Object} The response object with success status and message.
- */
-webapp.post('/register', async (req, res) => {
     try {
-        await userOperations.registerUser({
-            email: req.body.email,
-            username: req.body.username,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-        }, req.body.password);
+        const user = await users.getUserByUsername(username);
+        if (!user) {
+            res.status(401).json({ error: 'Username or password is incorrect' });
+        }
+        if (await bcrypt.compare(password, user.password)) {
+            const accessToken = authenticateUser(user.username, user._id);
+            res.status(201).json({ accessToken });
+        } else {
+            res.status(401).json({ error: 'Username or password is incorrect' });
+        }
     } catch (error) {
-        // console.log(error);
-        return res.status(401).json({ success: false, message: 'Your account could not be registered.' });
-    }
-    return res.status(201).json({ success: true, message: 'Your account has been saved' });
-});
-
-/**
- * Endpoint for user login.
- * @name POST /login
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {Function} next - The next middleware function.
- */
-webapp.post('/login', (req, res, next) => {
-    userOperations.authenticateUser(req, res, next);
-});
-
-/**
- * Endpoint to check if user is logged in.
- * @name GET /register
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Object} The response object with success status and message.
- */
-webapp.get('/register', (req, res) => {
-    if (req.isAuthenticated()) {
-        return res.status(200).json({ success: true, message: 'User is logged in' });
-    }
-    return res.status(200).json({ success: true, message: 'User is not logged in' });
-});
-
-/**
- * Endpoint for user logout.
- * @name POST /logout
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {Function} next - The next middleware function.
- */
-webapp.post('/logout', (req, res, next) => {
-    req.logout((err) => {
-        if (err) { return next(err); }
-        // Optionally, clear the client-side cookie that stores the session id
-        res.clearCookie('connect.sid', { path: '/' }); // Adjust the cookie name and path as needed
-        return res.status(201).json({ success: true, message: 'Logged out successfully' });
-    });
-});
-
-/**
- * Endpoint to fetch user information, protected.
- * @name GET /userinfo
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Object} The response object with user information or error message.
- */
-webapp.get('/userinfo', (req, res) => {
-    if (req.isAuthenticated()) {
-        res.json(req.user); // Send user information as a response
-    } else {
-        res.status(401).send('You are not authenticated');
+        console.log(error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
-/**
- * The root endpoint.
- * @name GET /
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Object} The response object with a success message.
- */
-webapp.get('/', (req, res) => res.status(200).json({ message: 'Successfully Connected' }));
+// Register endpoint
+app.post('/register', async (req, res) => {
+    const {
+        email, username, firstName, lastName, password,
+    } = req.body;
 
-// Export the webapp
-module.exports = webapp;
+    try {
+        // Check if user already exists
+        const existingUser = await users.getUserByUsername(username);
+        if (existingUser) {
+            // Send a response and exit the function early
+            res.status(401).json({ success: false, message: 'Username already exists' });
+            return; // Make sure to exit the function to prevent further execution
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create a new user
+        await users.createUser({
+            username, password: hashedPassword, email, firstName, lastName,
+        });
+
+        // Successful creation of the user
+        res.status(201).json({ success: true, message: 'Your account has been saved' });
+    } catch (error) {
+        // Log the error and send a 500 response
+        console.log(error);
+        res.status(500).json({ error: 'Could not register the user' });
+    }
+});
+
+// Get user info
+app.get('/user/:id', async (req, res) => {
+    try {
+        const user = await users.getUserById(req.params.id);
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+        } else {
+            res.json(user);
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching user' });
+    }
+});
+
+// Update user
+app.put('/user/:id', async (req, res) => {
+    const { password } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const result = await users.updateUser(req.params.id, { password: hashedPassword });
+        res.json({ message: 'User updated', result });
+    } catch (error) {
+        res.status(500).json({ error: 'Could not update user' });
+    }
+});
+
+// Delete user
+app.delete('/user/:id', async (req, res) => {
+    try {
+        const result = await users.deleteUser(req.params.id);
+        if (result.deletedCount === 0) {
+            res.status(404).json({ error: 'No user found with that ID' });
+        } else {
+            res.json({ message: 'User deleted' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Could not delete user' });
+    }
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+    res.json({ message: 'Connected to PennMarket Backend' });
+});
+
+app.get('/protected-route', verifyToken, (req, res) => {
+    res.json({ message: 'Welcome to the protected route!', user: req.user });
+});
+
+// GET /userinfo endpoint to return user's first name, username, and ObjectId
+app.get('/userinfo', verifyToken, async (req, res) => {
+    try {
+        // Assuming req.user is set in your verifyToken middleware and contains the username
+        const user = await users.getUserByUsername(req.username); // Ensure this function is awaited
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Send back the user's first name, username, and ObjectId
+        res.json({
+            firstName: user.firstName,
+            username: user.username,
+            id: user._id.toString(), // Ensure the ObjectId is converted to string if necessary
+        });
+    } catch (error) {
+        console.error('Failed to fetch user info:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+module.exports = app;
