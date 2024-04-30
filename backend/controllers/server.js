@@ -14,19 +14,25 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
+const corsOptions = {
     origin(origin, callback) {
         const allowedOrigins = ['https://group-project-team-5-buy-and-sell.vercel.app', 'http://localhost:5173'];
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
-            callback(new Error('CORS policy violation'), false);
+            callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true, // Allow credentials
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
-    allowedHeaders: 'Content-Type,Authorization', // Allowed custom headers
-}));
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions));
+
 
 // declaration for using external routes (including AWS)
 app.use('/aws', awsRoutes);
