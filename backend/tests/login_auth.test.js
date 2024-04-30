@@ -1,12 +1,15 @@
 const request = require('supertest');
+const dotenv = require('dotenv');
 const webapp = require('../controllers/server'); // Adjust the path if necessary
 const { closeMongoDBConnection, connect } = require('../models/dbUtils');
 const { deleteTestDataFromDB } = require('./testUtils');
 
+dotenv.config();
+
 const r = (Math.random() + 1).toString(36).substring(7);
 const testUser = {
     username: `testuser_${r}`,
-    password: 'iamdefinitelynotapassword',
+    password: process.env.TEST_USER_PASSWORD, // Ensure this is set in your CI/CD environment
     firstName: 'John',
     lastName: 'Doe',
     email: `john_${r}@college.edu`,
