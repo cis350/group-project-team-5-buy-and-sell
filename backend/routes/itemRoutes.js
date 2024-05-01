@@ -1,6 +1,5 @@
 const express = require('express');
 const { ObjectId } = require('mongodb');
-const jwt = require('jsonwebtoken');
 const { getDB } = require('../models/dbUtils'); // Utility to get DB instance
 const { verifyToken } = require('../controllers/auth'); // Assuming this is a middleware to verify JWTs
 
@@ -31,12 +30,10 @@ router.post('/additem', async (req, res) => {
             createdAt: new Date(), // Adding creation timestamp
         };
 
-        const result = await itemsCollection.insertOne(newItem);
-        //item: result.ops[0] 
-
-        res.status(201).json({ message: 'Item added successfully' });
+        await itemsCollection.insertOne(newItem);
+        return res.status(201).json({ message: 'Item added successfully' });
     } catch (error) {
-        res.status(400).json({ message: 'Error adding item to database', error: error.message });
+        return res.status(400).json({ message: 'Error adding item to database', error: error.message });
     }
 });
 
@@ -53,13 +50,11 @@ router.get('/:itemId', async (req, res) => {
         const item = await itemsCollection.findOne({ _id: new ObjectId(req.params.itemId) });
 
         if (!item) {
-            res.status(404).json({ message: 'Item not found' });
-        } else {
-            res.json(item);
+            return res.status(404).json({ message: 'Item not found' });
         }
+        return res.json(item);
     } catch (error) {
-        console.error('Error fetching item:', error);
-        res.status(500).json({ error: 'Error fetching item' });
+        return res.status(500).json({ error: 'Error fetching item' });
     }
 });
 

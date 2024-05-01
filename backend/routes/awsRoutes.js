@@ -23,9 +23,7 @@ router.get('/generate-presigned-url', (req, res) => {
   };
 
   s3.getSignedUrl('putObject', params, (err, url) => {
-    console.log('AWS Response:', { err, url }); // Add this line to log the error and url
     if (err) {
-      console.error('Error generating presigned URL:', err);
       return res.status(500).json({ error: 'Error generating presigned URL' });
     }
     return res.json({ url });
