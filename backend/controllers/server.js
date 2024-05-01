@@ -33,12 +33,19 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-
 // declaration for using external routes (including AWS)
 app.use('/aws', awsRoutes);
 app.use('/items', itemRoutes);
 
-// Login endpoint
+/**
+ * Login endpoint.
+ * @name POST /login
+ * @function
+ * @memberof module:server
+ * @param {string} req.body.username - The username of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @returns {Object} The access token if the login is successful, or an error message if the login fails.
+ */
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     // return failure if username or password is missing
@@ -64,7 +71,18 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Register endpoint
+/**
+ * Register endpoint.
+ * @name POST /register
+ * @function
+ * @memberof module:server
+ * @param {string} req.body.email - The email of the user.
+ * @param {string} req.body.username - The username of the user.
+ * @param {string} req.body.firstName - The first name of the user.
+ * @param {string} req.body.lastName - The last name of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @returns {Object} A success message if the registration is successful, or an error message if the registration fails.
+ */
 app.post('/register', async (req, res) => {
     const {
         email, username, firstName, lastName, password,
@@ -96,7 +114,14 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Get user info
+/**
+ * Get user info endpoint.
+ * @name GET /user/:id
+ * @function
+ * @memberof module:server
+ * @param {string} req.params.id - The ID of the user.
+ * @returns {Object} The user object if found, or an error message if the user is not found.
+ */
 app.get('/user/:id', async (req, res) => {
     try {
         const user = await users.getUserById(req.params.id);
@@ -110,7 +135,16 @@ app.get('/user/:id', async (req, res) => {
     }
 });
 
-// Update user
+/**
+ * Update user endpoint.
+ * @name PUT /user/:id
+ * @function
+ * @memberof module:server
+ * @param {string} req.params.id - The ID of the user.
+ * @param {string} req.body.password - The new password of the user.
+ * @returns {Object} A success message if the user is updated successfully,
+ *  or an error message if the update fails.
+ */
 app.put('/user/:id', async (req, res) => {
     const { password } = req.body;
     try {
@@ -122,7 +156,15 @@ app.put('/user/:id', async (req, res) => {
     }
 });
 
-// Delete user
+/**
+ * Delete user endpoint.
+ * @name DELETE /user/:id
+ * @function
+ * @memberof module:server
+ * @param {string} req.params.id - The ID of the user.
+ * @returns {Object} A success message if the user is deleted successfully,
+ *  or an error message if the deletion fails.
+ */
 app.delete('/user/:id', async (req, res) => {
     try {
         const result = await users.deleteUser(req.params.id);
@@ -136,16 +178,37 @@ app.delete('/user/:id', async (req, res) => {
     }
 });
 
-// Root endpoint
+/**
+ * Root endpoint.
+ * @name GET /
+ * @function
+ * @memberof module:server
+ * @returns {Object} A message indicating that the server is connected.
+ */
 app.get('/', (req, res) => {
     res.json({ message: 'Connected to PennMarket Backend' });
 });
 
+/**
+ * Protected route endpoint.
+ * @name GET /protected-route
+ * @function
+ * @memberof module:server
+ * @param {string} req.user - The user object obtained from the token verification middleware.
+ * @returns {Object} A welcome message to the protected route along with the user object.
+ */
 app.get('/protected-route', verifyToken, (req, res) => {
     res.json({ message: 'Welcome to the protected route!', user: req.user });
 });
 
-// GET /userinfo endpoint to return user's first name, username, and ObjectId
+/**
+ * Get user info endpoint.
+ * @name GET /userinfo
+ * @function
+ * @memberof module:server
+ * @param {string} req.username - The username obtained from the token verification middleware.
+ * @returns {Object} The user's first name, username, and ID if found, or an error message if the user is not found.
+ */
 app.get('/userinfo', verifyToken, async (req, res) => {
     try {
         // Assuming req.user is set in your verifyToken middleware and contains the username
@@ -155,17 +218,16 @@ app.get('/userinfo', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Send back the user's first name, username, and ObjectId
+        // Send back the user's first name, username, and ID
         res.json({
             firstName: user.firstName,
             username: user.username,
-            id: user._id.toString(), // Ensure the ObjectId is converted to string if necessary
+            id: user._id.toString(), // Ensure the ID is converted to string if necessary
         });
     } catch (error) {
         console.error('Failed to fetch user info:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 module.exports = app;

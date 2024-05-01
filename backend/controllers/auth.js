@@ -1,11 +1,12 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { getUserByUsername } = require('../models/users'); // Adjust the path according to your project structure
 
 /**
- * Generate a JWT for a given username
- * @param {string} username
- * @returns {string} JWT token
+ * Generate a JWT for a given username and user ID.
+ * @param {string} username - The username of the user.
+ * @param {string} id - The ID of the user.
+ * @returns {string} - The generated JWT token.
+ * @throws {Error} - If there is an error generating the token.
  */
 const authenticateUser = (username, id) => {
     try {
@@ -20,28 +21,13 @@ const authenticateUser = (username, id) => {
 };
 
 /**
- * Verify a JWT and check if the user is valid
- * @param {string} token
- * @returns {number} Status code representing the token/user verification result
+ * Verify the JWT token in the request header and add the decoded user ID
+ * and username to the request object.
+ * @param {*} req - The request object.
+ * @param {*} res - The response object.
+ * @param {*} next - The next middleware function.
+ * @returns {void}
  */
-const verifyUser = async (token) => {
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        console.log('payload', decoded);
-        const user = await getUserByUsername(decoded.username);
-        if (!user) {
-            return 2; // User does not exist
-        }
-        return 0; // User verified successfully
-    } catch (err) {
-        console.error('Error in verifyUser:', err.message);
-        if (err.name === 'TokenExpiredError') {
-            return 1; // Token expired
-        }
-        return 3; // Invalid token
-    }
-};
-
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1]; // Bearer Token
@@ -61,4 +47,4 @@ const verifyToken = (req, res, next) => {
     });
 };
 
-module.exports = { authenticateUser, verifyUser, verifyToken };
+module.exports = { authenticateUser, verifyToken };
