@@ -44,7 +44,8 @@ app.use('/items', itemRoutes);
  * @memberof module:server
  * @param {string} req.body.username - The username of the user.
  * @param {string} req.body.password - The password of the user.
- * @returns {Object} The access token if the login is successful, or an error message if the login fails.
+ * @returns {Object} The access token if the login is successful,
+ * or an error message if the login fails.
  */
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
@@ -66,7 +67,6 @@ app.post('/login', async (req, res) => {
             res.status(401).json({ error: 'Username or password is incorrect' });
         }
     } catch (error) {
-        console.log(error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -81,7 +81,8 @@ app.post('/login', async (req, res) => {
  * @param {string} req.body.firstName - The first name of the user.
  * @param {string} req.body.lastName - The last name of the user.
  * @param {string} req.body.password - The password of the user.
- * @returns {Object} A success message if the registration is successful, or an error message if the registration fails.
+ * @returns {Object} A success message if the registration is successful,
+ * or an error message if the registration fails.
  */
 app.post('/register', async (req, res) => {
     const {
@@ -109,7 +110,6 @@ app.post('/register', async (req, res) => {
         res.status(201).json({ success: true, message: 'Your account has been saved' });
     } catch (error) {
         // Log the error and send a 500 response
-        console.log(error);
         res.status(500).json({ error: 'Could not register the user' });
     }
 });
@@ -207,26 +207,24 @@ app.get('/protected-route', verifyToken, (req, res) => {
  * @function
  * @memberof module:server
  * @param {string} req.username - The username obtained from the token verification middleware.
- * @returns {Object} The user's first name, username, and ID if found, or an error message if the user is not found.
+ * @returns {Object} The user's first name, username, and ID if found,
+ * or an error message if the user is not found.
  */
 app.get('/userinfo', verifyToken, async (req, res) => {
     try {
-        // Assuming req.user is set in your verifyToken middleware and contains the username
-        const user = await users.getUserByUsername(req.username); // Ensure this function is awaited
+        const user = await users.getUserByUsername(req.username);
 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Send back the user's first name, username, and ID
-        res.json({
+        return res.json({
             firstName: user.firstName,
             username: user.username,
-            id: user._id.toString(), // Ensure the ID is converted to string if necessary
+            id: user._id.toString(),
         });
     } catch (error) {
-        console.error('Failed to fetch user info:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 });
 
