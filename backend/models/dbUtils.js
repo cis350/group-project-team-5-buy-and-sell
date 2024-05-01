@@ -1,3 +1,8 @@
+/**
+ * @file dbUtils.js
+ * @description Utility functions for connecting to and interacting with MongoDB database.
+ * @module dbUtils
+ */
 // this is a node app, we must use commonJS modules/ require
 
 // import the env variables
@@ -23,11 +28,8 @@ const connect = async () => {
       mongoDBURL,
 )); // we return the entire connection, not just the DB
     // check that we are connected to the db
-    console.log(`connected to db: ${MongoConnection.db().databaseName}`);
     return MongoConnection;
-  } catch (err) {
-    console.log(err.message);
-  }
+  } catch (err) { /* empty */ }
 
   return false;
 };

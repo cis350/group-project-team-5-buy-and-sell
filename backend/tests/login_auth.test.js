@@ -1,4 +1,5 @@
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const webapp = require('../controllers/server'); // Adjust the path if necessary
 const { closeMongoDBConnection, connect } = require('../models/dbUtils');
@@ -101,5 +102,52 @@ describe('Authentication and User Management', () => {
 
         expect(response.status).toBe(401);
         expect(response.body).toHaveProperty('error', 'Username or password is missing');
+    });
+
+    test('Protected Route', async () => {
+        const response = await request(webapp)
+            .get('/protected-route')
+            .set('Authorization', `Bearer ${authToken}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('message', 'Welcome to the protected route!');
+    });
+
+    test('Get User Info', async () => {
+        const response = await request(webapp)
+            .get('/userinfo')
+            .set('Authorization', `Bearer ${authToken}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('username', testUser.username);
+        expect(response.body).toHaveProperty('firstName', testUser.firstName);
+    });
+
+    test('Get User Info Unauthorized', async () => {
+        const response = await request(webapp)
+            .get('/userinfo');
+
+        expect(response.status).toBe(401);
+        expect(response.body).toHaveProperty('error', 'No token provided');
+    });
+
+    test('Get User Info By ID, incorrect ID', async () => {
+        const response = await request(webapp)
+            .get(`/user/${testUser.username}`);
+
+        expect(response.status).toBe(500);
+        expect(response.body).toHaveProperty('error', 'Error fetching user');
+    });
+
+    test('Update User', async () => {
+        const { id } = jwt.verify(authToken, process.env.JWT_SECRET_KEY);
+        const response = await request(webapp)
+            .put(`/user/${id}`)
+            .send({
+                password: 'newpassword',
+            });
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('message', 'User updated');
     });
 });
