@@ -74,7 +74,7 @@ function AddItemPage() {
         postedBy: user._id,
       }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
 
@@ -159,7 +159,7 @@ function AddItemPage() {
           <form onSubmit={handleSubmit} className="space-y-6 ml-10">
             <div className="flex flex-wrap justify-start gap-4">
               {photos.map((photoUrl, index) => (
-                <div key={index} className="w-36 h-36 relative group">
+                <div key={photoUrl} className="w-36 h-36 relative group">
                   <img src={photoUrl} alt={`Upload ${index}`} className="w-full h-full object-cover" />
                   <button
                     type="button"
@@ -173,12 +173,20 @@ function AddItemPage() {
                   </button>
                 </div>
               ))}
-              <label className="w-36 h-36 flex flex-col items-center justify-center bg-gray-300 text-gray-700 font-bold">
-                <label className="cursor-pointer text-4xl text-gray-500">
+              <div className="w-36 h-36 flex flex-col items-center justify-center bg-gray-300 text-gray-700 font-bold">
+                <label htmlFor="photoInput" className="cursor-pointer text-4xl text-gray-500">
                   +
-                  <input type="file" multiple accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                  <input
+                    id="photoInput"
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
                 </label>
-              </label>
+              </div>
+
             </div>
             <div className="text-l font-bold tracking text-black max-md:text-l">
               Key Photo
