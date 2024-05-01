@@ -1,3 +1,8 @@
+/**
+ * @file dbUtils.js
+ * @description Utility functions for connecting to and interacting with MongoDB database.
+ * @module dbUtils
+ */
 // this is a node app, we must use commonJS modules/ require
 
 // import the env variables
