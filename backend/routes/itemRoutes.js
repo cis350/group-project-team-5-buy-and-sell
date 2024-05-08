@@ -1,6 +1,5 @@
 const express = require('express');
 const { ObjectId } = require('mongodb');
-const jwt = require('jsonwebtoken');
 const { getDB } = require('../models/dbUtils'); // Utility to get DB instance
 const { verifyToken } = require('../controllers/auth'); // Assuming this is a middleware to verify JWTs
 
@@ -31,12 +30,10 @@ router.post('/additem', async (req, res) => {
             createdAt: new Date(), // Adding creation timestamp
         };
 
-        const result = await itemsCollection.insertOne(newItem);
-        //item: result.ops[0] 
-
-        res.status(201).json({ message: 'Item added successfully' });
+        await itemsCollection.insertOne(newItem);
+        return res.status(201).json({ message: 'Item added successfully' });
     } catch (error) {
-        res.status(400).json({ message: 'Error adding item to database', error: error.message });
+        return res.status(400).json({ message: 'Error adding item to database', error: error.message });
     }
 });
 
@@ -65,6 +62,7 @@ router.get('/:userId/items', async (req, res) => {
         } else {
             res.json(items);
         }
+        return res.json(items);
     } catch (error) {
         console.error('Error fetching items:', error);
         res.status(500).json({ error: 'Error fetching items' });
