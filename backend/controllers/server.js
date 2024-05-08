@@ -220,6 +220,7 @@ app.get('/userinfo', verifyToken, async (req, res) => {
 
         return res.json({
             firstName: user.firstName,
+            lastName: user.lastName,
             username: user.username,
             id: user._id.toString(),
         });

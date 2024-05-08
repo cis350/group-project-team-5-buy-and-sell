@@ -37,6 +37,27 @@ router.post('/additem', async (req, res) => {
     }
 });
 
+// Get an item by its ID
+router.get('/:itemId', async (req, res) => {
+    if (!req.userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const db = await getDB();
+    const itemsCollection = db.collection('items');
+
+    try {
+        const item = await itemsCollection.findOne({ _id: new ObjectId(req.params.itemId) });
+
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        return res.json(item);
+    } catch (error) {
+        return res.status(500).json({ error: 'Error fetching item' });
+    }
+});
+
 /**
  * Get items posted by a user by userId.
  * @name GET /:userId/items
@@ -57,17 +78,17 @@ router.get('/:userId/items', async (req, res) => {
     try {
         const items = await itemsCollection.find({ postedBy: req.userId }).toArray();
 
-        if (!items) {
-            res.status(404).json({ message: 'No items found' });
-        } else {
-            res.json(items);
+        // Check directly if the items array is empty
+        if (items.length === 0) {
+            return res.status(404).json({ message: 'No items found' });
         }
+
+        // If items are found, respond with them
         return res.json(items);
     } catch (error) {
-        console.error('Error fetching items:', error);
-        res.status(500).json({ error: 'Error fetching items' });
+        // If an error occurs, log it and return an error response
+        return res.status(500).json({ error: 'Error fetching items' });
     }
-    return res;
 });
 
 module.exports = router;
