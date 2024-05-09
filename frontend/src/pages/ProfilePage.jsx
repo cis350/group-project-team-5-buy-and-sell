@@ -1,16 +1,27 @@
 // components/ProfilePage.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 function ProfilePage() {
+  const [items, setItems] = useState([]);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const goHome = () => {
     navigate('/');
   };
 
-  // Placeholder for user data - replace with actual data fetching logic
-  const profileImagePlaceholder = 'https://via.placeholder.com/150';
+  const navigateTo = (itemId) => {
+    navigate(`/itemdescription/${itemId}`);
+  };
+
+  // Placeholder for user data and item images
+  const placeholderImage = 'https://via.placeholder.com/150';
+  const profileImagePlaceholder = '/images/defaultprofile.JPG';
   const userData = {
     name: 'Josh Lee',
     university: 'University of Pennsylvania',
@@ -28,6 +39,68 @@ function ProfilePage() {
     ],
   };
 
+  // Calculate the number of placeholders needed if the items array has less than 5 items
+  const placeholdersNeeded = 5 - items.length;
+  const placeholders = Array.from({ length: placeholdersNeeded }, () => ({
+    id: `placeholder-${Math.random()}`, // giving a unique key for each placeholder
+    photos: [placeholderImage],
+    name: '',
+    price: 'N/A',
+  }));
+
+  // Combine the actual items and the placeholders
+  const displayItems = items.concat(placeholders);
+
+  useEffect(() => {
+    const loadUserListings = async (currentUser) => {
+      if (!currentUser) {
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('accessToken');
+        const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/items/${currentUser.id}/items`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        });
+
+        if (userResponse && userResponse.data) {
+          setItems(userResponse.data); // Set items data in your state
+        }
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      }
+    };
+
+    const checkUserLoggedIn = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          goHome();
+          enqueueSnackbar('Please log in first.', { variant: 'warning' });
+          return; // Early return to stop further execution if no token
+        }
+
+        const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/userinfo`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        });
+
+        if (userResponse && userResponse.data) {
+          setUser(userResponse.data); // Set the user data in your state or context
+          await loadUserListings(userResponse.data); // Load listings only after user is set
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    checkUserLoggedIn();
+  }, [navigate, enqueueSnackbar, setUser, setItems]);
+  // Include all hooks and state setters used inside the effect
+
   return (
     <div className="flex flex-col items-center pt-16 bg-white font-inter">
       {/* Navigation and header */}
@@ -41,7 +114,9 @@ function ProfilePage() {
         <div className="flex items-center space-x-6">
           <img src={userData.profileImage} alt="Profile" className="rounded-md w-32 h-32" />
           <div>
-            <h1 className="text-3xl text-blue-950 font-interbold">{userData.name}</h1>
+            <h1 className="text-3xl text-blue-950 font-interbold">
+              {user ? `${user.firstName} ${user.lastName}` : 'Josh Lee'}
+            </h1>
             <p className="text-sm text-blue-950 font-inter">{userData.university}</p>
             <div className="flex mt-4">
               <button type="button" className="bg-white text-blue-950 border-blue-900 border-2 py-1 px-5 rounded-md text-sm font-inter">Follow</button>
@@ -74,12 +149,36 @@ function ProfilePage() {
           {/* Horizontal Line */}
           <hr className="my-2 border-t-4 border-black" />
           <div className="flex overflow-x-auto mt-4 space-x-6 pb-4">
-            {userData.previousItems.map((item) => (
-              <div key={item} className="flex-shrink-0 w-32 text-start">
-                <img src={item.imageUrl} alt={item.name} className="w-full h-32 object-cover rounded-md" />
-                <p className="my-2 text-sm font-interbold">{item.name}</p>
-              </div>
-            ))}
+            {items && items.length > 0 ? (
+              displayItems.map((item) => (
+                <div key={item.id} className="flex-shrink-0 w-32 text-start">
+                  <button
+                    type="button"
+                    onClick={() => navigateTo(item._id)}
+                    style={{ all: 'unset', cursor: 'pointer' }}
+                    className="focus:outline-none focus:ring-2 focus:ring-blue-500" // focus styles for accessibility
+                  >
+                    <img
+                      src={item.photos[0]}
+                      alt={item.name}
+                      className="w-full h-32 object-cover rounded-md"
+                    />
+                  </button>
+                  <p className="my-2 text-sm font-interbold">{item.name}</p>
+                  <p className="my-2 text-sm font-interbold">
+                    $
+                    {item.price}
+                  </p>
+                </div>
+              ))
+            ) : (
+              userData.previousItems.map((item) => (
+                <div key={item.id} className="flex-shrink-0 w-32 text-start">
+                  <img src={item.imageUrl} alt={item.name} className="w-full h-32 object-cover rounded-md" />
+                  <p className="my-2 text-sm font-interbold">{item.name}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
