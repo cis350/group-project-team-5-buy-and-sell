@@ -54,12 +54,11 @@ app.post('/login', async (req, res) => {
         res.status(401).json({ error: 'Username or password is missing' });
         return;
     }
-
     try {
         const user = await users.getUserByUsername(username);
         if (!user) {
             res.status(401).json({ error: 'Username or password is incorrect' });
-        }
+        } else
         if (await bcrypt.compare(password, user.password)) {
             const accessToken = authenticateUser(user.username, user._id);
             res.status(201).json({ accessToken });
@@ -124,7 +123,7 @@ app.post('/register', async (req, res) => {
  */
 app.get('/user/:id', async (req, res) => {
     try {
-        const user = await users.getUserById(req.params.id);
+        const user = await users.getUser(req.params.id);
         if (!user) {
             res.status(404).json({ error: 'User not found' });
         } else {
@@ -150,8 +149,12 @@ app.put('/user/:id', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const result = await users.updateUser(req.params.id, { password: hashedPassword });
-        res.json({ message: 'User updated', result });
-    } catch (error) {
+        if (result.modifiedCount === 0) {
+            res.status(404).json({ error: 'No user found with that ID' });
+        } else {
+                res.json({ message: 'User updated', result });
+            }
+        } catch (error) {
         res.status(500).json({ error: 'Could not update user' });
     }
 });

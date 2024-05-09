@@ -8,7 +8,24 @@ const router = express.Router();
 // Middleware to verify JWT and add user to request
 router.use(verifyToken);
 
-// Add an item
+/**
+ * Add an item.
+ * @name POST /additem
+ * @function
+ * @memberof module:itemRoutes
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body.
+ * @param {number} req.body.price - The price of the item.
+ * @param {string} req.body.name - The name of the item.
+ * @param {string} req.body.description - The description of the item.
+ * @param {string} req.body.category - The category of the item.
+ * @param {string} req.body.payment - The payment method for the item.
+ * @param {string} req.body.delivery - The delivery method for the item.
+ * @param {string} req.userId - The ID of the user making the request.
+ * @param {Array<string>} req.body.photos - The URLs of the item's photos.
+ * @returns {Object} The response object.
+ * @throws {Error} If there is an error adding the item to the database.
+ */
 router.post('/additem', async (req, res) => {
     if (!req.userId) {
         return res.status(401).json({ message: 'Unauthorized: userId does not exist' });
@@ -37,7 +54,17 @@ router.post('/additem', async (req, res) => {
     }
 });
 
-// Get an item by its ID
+/**
+ * Get an item by its ID.
+ * @name GET /:itemId
+ * @function
+ * @memberof module:itemRoutes
+ * @param {Object} req - The request object.
+ * @param {string} req.params.itemId - The ID of the item.
+ * @param {string} req.userId - The ID of the user making the request.
+ * @returns {Object} The response object.
+ * @throws {Error} If there is an error fetching the item from the database.
+ */
 router.get('/:itemId', async (req, res) => {
     if (!req.userId) {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -63,9 +90,11 @@ router.get('/:itemId', async (req, res) => {
  * @name GET /:userId/items
  * @function
  * @memberof module:itemRoutes
+ * @param {Object} req - The request object.
  * @param {string} req.params.userId - The ID of the user.
- * @returns {Object} The items posted by the user if found,
- * or an error message if no items are found.
+ * @param {string} req.userId - The ID of the user making the request.
+ * @returns {Object} The response object.
+ * @throws {Error} If there is an error fetching the items from the database.
  */
 router.get('/:userId/items', async (req, res) => {
     if (!req.userId) {
@@ -76,7 +105,7 @@ router.get('/:userId/items', async (req, res) => {
     const itemsCollection = db.collection('items');
 
     try {
-        const items = await itemsCollection.find({ postedBy: req.userId }).toArray();
+        const items = await itemsCollection.find({ postedBy: req.params.userId }).toArray();
 
         // Check directly if the items array is empty
         if (items.length === 0) {

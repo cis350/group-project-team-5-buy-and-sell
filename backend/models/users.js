@@ -78,7 +78,7 @@ const updateUser = async (userID, newUName) => {
     // get the db
     const db = await getDB();
     const result = await db.collection('users').updateOne(
-      { _id: ObjectId(userID) },
+      { _id: new ObjectId(userID) },
       { $set: { username: newUName } },
     );
     return result;
@@ -93,7 +93,7 @@ const deleteUser = async (userID) => {
     // get the db
     const db = await getDB();
     const result = await db.collection('users').deleteOne(
-      { _id: ObjectId(userID) },
+      { _id: new ObjectId(userID) },
     );
     return result;
   } catch (err) {
