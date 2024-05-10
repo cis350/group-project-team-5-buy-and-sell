@@ -23,6 +23,10 @@ function Navbar() {
         navigate('/additem');
     };
 
+    const goProfile = () => {
+        navigate('/profile');
+    };
+
     // function to handle logout
     const handleLogout = async () => {
         try {
@@ -83,7 +87,7 @@ function Navbar() {
                 <div className="flex items-center">
                     <button type="button" className="font-inter mr-12 text-lg">Search</button>
                     <button type="button" className="font-inter mr-12 text-lg" onClick={goAddItem}>Add Items</button>
-                    <button type="button" className="font-inter mr-12 text-lg">My Profile</button>
+                    <button type="button" className="font-inter mr-12 text-lg" onClick={goProfile}>My Profile</button>
                     {isLoggedIn ? (
                         <button
                             type="button"

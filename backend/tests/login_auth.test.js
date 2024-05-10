@@ -92,6 +92,28 @@ describe('Authentication and User Management', () => {
         expect(response.body).toHaveProperty('error', 'Username or password is incorrect');
     });
 
+    // No login credentials
+    test('Invalid Password', async () => {
+        const response = await request(webapp)
+            .post('/login')
+            .send({});
+
+        expect(response.status).toBe(401);
+        expect(response.body).toHaveProperty('error', 'Username or password is missing');
+    });
+
+    // No such user in login credentials
+    test('Invalid Password', async () => {
+        const response = await request(webapp)
+            .post('/login')
+            .send({
+                username: 'IncorrectUsername',
+                password: 'wrongpassword',
+            });
+        expect(response.status).toBe(401);
+        expect(response.body).toHaveProperty('error', 'Username or password is incorrect');
+    });
+
     // Missing username
     test('Missing username', async () => {
         const response = await request(webapp)
@@ -135,8 +157,21 @@ describe('Authentication and User Management', () => {
         const response = await request(webapp)
             .get(`/user/${testUser.username}`);
 
-        expect(response.status).toBe(500);
-        expect(response.body).toHaveProperty('error', 'Error fetching user');
+        expect(response.status).toBe(404);
+        expect(response.body).toHaveProperty('error', 'User not found');
+    });
+
+    test('Get User Info By ID', async () => {
+        const { id } = jwt.verify(authToken, process.env.JWT_SECRET_KEY);
+        console.log(id);
+        const response = await request(webapp)
+            .get(`/user/${id}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('email', testUser.email);
+        expect(response.body).toHaveProperty('username', testUser.username);
+        expect(response.body).toHaveProperty('firstName', testUser.firstName);
+        expect(response.body).toHaveProperty('lastName', testUser.lastName);
     });
 
     test('Update User', async () => {
@@ -149,5 +184,25 @@ describe('Authentication and User Management', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('message', 'User updated');
+    });
+
+    test('Update User, no such user', async () => {
+        const response = await request(webapp)
+            .put('/user/wrongid')
+            .send({
+                password: 'newpassword',
+            });
+
+        expect(response.status).toBe(500);
+        expect(response.body).toHaveProperty('error', 'Could not update user');
+    });
+
+    test('Delete User', async () => {
+        const { id } = jwt.verify(authToken, process.env.JWT_SECRET_KEY);
+        const response = await request(webapp)
+            .delete(`/user/${id}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('message', 'User deleted');
     });
 });
