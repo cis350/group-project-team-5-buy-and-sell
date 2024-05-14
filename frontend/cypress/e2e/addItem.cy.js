@@ -1,0 +1,30 @@
+describe('login E2E test', () => {
+    beforeEach(() => {
+        // cy.visit('https://group-project-team-5-buy-and-sell.vercel.app/registration')
+        // cy.get('input[type="First Name"]').type('John')
+        // cy.get('input[type="Last Name"]').type('Doe')
+        // cy.get('input[type="username"]').type('Johndoe')
+        // cy.get('input[type="email"]').type('john@upenn.edu')
+        // cy.get('input[type="password"]').type('pass123')
+        // cy.get('button').contains('Create personal account').click()
+
+        cy.visit('https://group-project-team-5-buy-and-sell.vercel.app/login')
+        cy.get('input').first().type('Johndoe')
+        cy.get('input').last().type('pass123')
+        cy.get('button').last().click()
+    })
+
+    it('Testing add item flow', () => {
+        cy.visit('https://group-project-team-5-buy-and-sell.vercel.app/additem')
+        cy.get('input[placeholder="Item Name"]').type('textbook')
+        cy.get('input[placeholder="Item Name"]').should('have.value', 'textbook')
+        cy.get('select').eq(0).select('Books')
+        cy.get('textarea[placeholder="Item Description"]').type('textbook for cis')
+        cy.get('textarea[placeholder="Item Description"]').should('have.value', 'textbook for cis')
+        cy.get('input[placeholder="Item Price"]').type('10')
+        cy.get('input[placeholder="Item Price"]').should('have.value', '10')
+        cy.get('select').eq(1).select('Venmo')
+        cy.get('select').eq(2).select('Shipping')
+        cy.get('button').contains('Complete Listing').click()
+    })
+  })
