@@ -163,7 +163,6 @@ describe('Authentication and User Management', () => {
 
     test('Get User Info By ID', async () => {
         const { id } = jwt.verify(authToken, process.env.JWT_SECRET_KEY);
-        console.log(id);
         const response = await request(webapp)
             .get(`/user/${id}`);
 

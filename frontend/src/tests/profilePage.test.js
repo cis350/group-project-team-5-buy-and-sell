@@ -1,6 +1,6 @@
 // __tests__/ProfilePage.test.jsx
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import '@testing-library/jest-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -65,7 +65,7 @@ describe('ProfilePage', () => {
         <Router>
           <ProfilePage />
         </Router>
-      </SnackbarProvider>
+      </SnackbarProvider>,
     );
 
     await waitFor(() => {
@@ -80,7 +80,7 @@ describe('ProfilePage', () => {
         <Router>
           <ProfilePage />
         </Router>
-      </SnackbarProvider>
+      </SnackbarProvider>,
     );
 
     await waitFor(() => {
@@ -96,7 +96,7 @@ describe('ProfilePage', () => {
         <Router>
           <ProfilePage />
         </Router>
-      </SnackbarProvider>
+      </SnackbarProvider>,
     );
 
     // Check for navigation and header elements

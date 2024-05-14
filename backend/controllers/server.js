@@ -225,6 +225,7 @@ app.get('/userinfo', verifyToken, async (req, res) => {
             firstName: user.firstName,
             lastName: user.lastName,
             username: user.username,
+            email: user.email,
             id: user._id.toString(),
         });
     } catch (error) {

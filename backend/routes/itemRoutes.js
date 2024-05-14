@@ -2,6 +2,7 @@ const express = require('express');
 const { ObjectId } = require('mongodb');
 const { getDB } = require('../models/dbUtils'); // Utility to get DB instance
 const { verifyToken } = require('../controllers/auth'); // Assuming this is a middleware to verify JWTs
+const users = require('../models/users'); // Assume you have CRUD operations and user fetching in this file
 
 const router = express.Router();
 
@@ -45,6 +46,7 @@ router.post('/additem', async (req, res) => {
             postedBy: req.userId,
             photos: req.body.photos, // Array of photo URLs
             createdAt: new Date(), // Adding creation timestamp
+            bookmarked: 0,
         };
 
         await itemsCollection.insertOne(newItem);
@@ -117,6 +119,44 @@ router.get('/:userId/items', async (req, res) => {
     } catch (error) {
         // If an error occurs, log it and return an error response
         return res.status(500).json({ error: 'Error fetching items' });
+    }
+});
+
+router.post('/bookmark/:itemId', async (req, res) => {
+    if (!req.userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const db = await getDB();
+    const itemsCollection = db.collection('items');
+
+    try {
+        const itemId = new ObjectId(req.params.itemId);
+        const item = await itemsCollection.findOne({ _id: itemId });
+
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        // Check if the user is trying to bookmark their own item
+        if (item.postedBy === req.userId) {
+            return res.status(400).json({ message: 'Users cannot bookmark their own items' });
+        }
+
+        // Increment the 'bookmarked' count or initialize it to 1 if undefined
+        const bookmarkedCount = item.bookmarked ? item.bookmarked + 1 : 1;
+        await itemsCollection.updateOne({ _id: itemId }, { $set: { bookmarked: bookmarkedCount } });
+
+        // Fetch the user object using the postedBy field
+        const user = await users.getUser(item.postedBy);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return the user's email
+        return res.json({ email: user.email });
+    } catch (error) {
+        return res.status(500).json({ error: 'Error processing request' });
     }
 });
 

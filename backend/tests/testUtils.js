@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 /**
  * Deletes test data from the database based on the provided username.
  * @param {Object} db - The MongoDB database object.

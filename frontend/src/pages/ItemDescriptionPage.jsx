@@ -5,6 +5,7 @@ import axios from 'axios';
 function ItemDescription() {
     const { itemId } = useParams();
     const [item, setItem] = useState(null);
+    const [sellerEmail, setSellerEmail] = useState(null);
     const navigate = useNavigate();
     const placeholderImage = 'https://via.placeholder.com/150';
 
@@ -32,6 +33,27 @@ function ItemDescription() {
         }
         fetchItem();
     }, [itemId]);
+
+    const handleBookmark = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                return; // If no token, the user is not logged in
+            }
+
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/items/bookmark/${itemId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                },
+            });
+
+            if (response.data.email) {
+                setSellerEmail(response.data.email);
+            }
+        } catch (error) {
+            console.error('Error bookmarking item:', error);
+        }
+    };
 
     if (!item) {
         return <div>Loading...</div>;
@@ -72,13 +94,31 @@ function ItemDescription() {
                             <div className="flex flex-col grow leading-[150%] max-md:mt-9">
                                 <div className="flex flex-col px-12 py-9 text-base font-inter bg-white rounded-xl border-2 border-solid border-blue-950 text-zinc-500 max-md:px-5">
                                     <div className="justify-center px-4 py-3 bg-white rounded-lg border-2 border-solid shadow-sm border-blue-950 max-md:pr-5">
+                                        Bookmarks:
+                                        {' '}
+                                        {item.bookmarked ?? 0}
+                                    </div>
+                                    <div className="justify-center px-4 py-3 mt-3 bg-white rounded-lg border-2 border-solid shadow-sm border-blue-950 max-md:pr-5">
                                         $
                                         {item.price}
                                     </div>
                                     <div className="justify-center px-4 py-3 mt-3 bg-white rounded-lg border-2 border-solid shadow-sm border-blue-950 max-md:pr-5">{item.payment}</div>
                                     <div className="justify-center px-4 py-3 mt-3 bg-white rounded-lg border-2 border-solid shadow-sm border-blue-950 max-md:pr-5">{item.delivery}</div>
                                 </div>
-                                <button type="button" className="justify-center items-center px-4 py-3.5 mt-6 text-2xl font-inter text-green-500 whitespace-nowrap bg-white rounded-lg border-4 border-green-500 border-solid max-md:px-5">Contact Seller</button>
+                                <button
+                                    type="button"
+                                    className="justify-center items-center px-4 py-3.5 mt-6 text-2xl font-inter text-green-500 whitespace-nowrap bg-white rounded-lg border-4 border-green-500 border-solid max-md:px-5"
+                                    onClick={handleBookmark}
+                                >
+                                    Bookmark Item
+                                </button>
+                                {sellerEmail && (
+                                    <div className="mt-4 text-xl font-inter text-blue-950">
+                                        Seller Email:
+                                        {' '}
+                                        {sellerEmail}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -122,6 +162,5 @@ function ItemDescription() {
         </div>
     );
 }
-
 
 export default ItemDescription;
