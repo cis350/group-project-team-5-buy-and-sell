@@ -30,6 +30,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     // suppress errors for missing 'import React' in files
     'react/react-in-jsx-scope': 'off',
+    'react/jsx-filename-extension': 'off',
     'react/jsx-indent': 'off',
     'react/jsx-indent-props': 'off',
   },

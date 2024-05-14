@@ -1,6 +1,8 @@
 // __tests__/RegistrationPage.test.jsx
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render, screen, fireEvent, waitFor,
+} from '@testing-library/react';
 import axios from 'axios';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
@@ -14,7 +16,7 @@ describe('RegistrationPage', () => {
     jest.clearAllMocks();
 
     // Mock localStorage.setItem
-    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
+    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { });
   });
 
   test('renders RegistrationPage and handles user input', () => {
@@ -23,7 +25,7 @@ describe('RegistrationPage', () => {
         <Router>
           <RegistrationPage />
         </Router>
-      </SnackbarProvider>
+      </SnackbarProvider>,
     );
 
     // Check for the text and buttons
@@ -66,7 +68,7 @@ describe('RegistrationPage', () => {
         <Router>
           <RegistrationPage />
         </Router>
-      </SnackbarProvider>
+      </SnackbarProvider>,
     );
 
     // Enter registration details
@@ -90,7 +92,7 @@ describe('RegistrationPage', () => {
           lastName: 'Doe',
           password: 'password123',
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
     });
 
@@ -108,7 +110,7 @@ describe('RegistrationPage', () => {
         <Router>
           <RegistrationPage />
         </Router>
-      </SnackbarProvider>
+      </SnackbarProvider>,
     );
 
     // Enter registration details
@@ -132,7 +134,7 @@ describe('RegistrationPage', () => {
           lastName: 'Doe',
           password: 'password123',
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
     });
 

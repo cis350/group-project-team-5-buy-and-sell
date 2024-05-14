@@ -1,5 +1,7 @@
 import React from 'react';
-import { render, waitFor, screen, act } from '@testing-library/react';
+import {
+    render, waitFor, screen, act,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import { MemoryRouter } from 'react-router-dom';
@@ -26,9 +28,11 @@ describe('ItemDescription Tests', () => {
 
     test('displays loading state correctly', async () => {
         // Delay the resolution to simulate network delay
-        axios.get.mockResolvedValueOnce(new Promise(resolve => {
+        axios.get.mockResolvedValueOnce(new Promise((resolve) => {
             setTimeout(() => resolve({
-                data: { name: 'Item 1', photos: [], description: '', price: '', payment: '', delivery: '' }
+                data: {
+                    name: 'Item 1', photos: [], description: '', price: '', payment: '', delivery: '',
+                },
             }), 100);
         }));
 
@@ -36,7 +40,7 @@ describe('ItemDescription Tests', () => {
             render(
                 <MemoryRouter>
                     <ItemDescription />
-                </MemoryRouter>
+                </MemoryRouter>,
             );
         });
 
@@ -54,16 +58,16 @@ describe('ItemDescription Tests', () => {
                 description: 'Description here',
                 price: '10.99',
                 payment: 'Visa',
-                delivery: '2-day shipping'
-            }
+                delivery: '2-day shipping',
+            },
         };
         axios.get.mockResolvedValue(itemData);
-        
+
         await act(async () => {
             render(
                 <MemoryRouter>
                     <ItemDescription />
-                </MemoryRouter>
+                </MemoryRouter>,
             );
         });
 
@@ -80,15 +84,15 @@ describe('ItemDescription Tests', () => {
         render(
             <MemoryRouter>
                 <ItemDescription />
-            </MemoryRouter>
+            </MemoryRouter>,
         );
     });
 
     test('does not render item details if no access token', async () => {
         localStorage.removeItem('accessToken'); // Make sure no token is available
-    
+
         render(<MemoryRouter><ItemDescription /></MemoryRouter>);
-    
+
         // Check that only the "Loading..." text is rendered and nothing else
         expect(screen.getByText('Loading...')).toBeInTheDocument();
         expect(screen.queryByText(/item name/i)).not.toBeInTheDocument();
@@ -96,14 +100,16 @@ describe('ItemDescription Tests', () => {
 
     test('displays placeholder images if less than three photos are returned', async () => {
         axios.get.mockResolvedValueOnce({
-            data: { name: 'Item', photos: ['https://example.com/photo1.jpg'], description: 'Desc', price: '100', payment: 'Cash', delivery: 'Instant' }
+            data: {
+                name: 'Item', photos: ['https://example.com/photo1.jpg'], description: 'Desc', price: '100', payment: 'Cash', delivery: 'Instant',
+            },
         });
-    
+
         render(<MemoryRouter><ItemDescription /></MemoryRouter>);
-    
+
         await waitFor(() => {
             const images = screen.getAllByRole('img'); // Get all images rendered by the component
-            const placeholders = images.filter(img => img.src.includes('https://via.placeholder.com/150'));
+            const placeholders = images.filter((img) => img.src.includes('https://via.placeholder.com/150'));
             expect(placeholders.length).toBe(2); // Expecting two placeholders
         });
     });
