@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "test": "jest",
+    "test": "jest --coverage",
     "preview": "vite preview",
     "cypress:open": "cypress open"
   },
@@ -38,6 +38,7 @@
     "babel-jest": "^29.7.0",
     "babel-plugin-transform-import-meta": "^2.2.1",
     "babel-plugin-transform-vite-meta-env": "^1.0.3",
+    "cypress": "^11.0.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.29.1",
@@ -52,10 +53,9 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.1.2",
-    "vite": "^5.2.8",
-    "cypress": "^11.0.0" 
-  }, 
-  "browserslist" : [
+    "vite": "^5.2.8"
+  },
+  "browserslist": [
     "last 2 versions",
     "> 1%"
   ]
