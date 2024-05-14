@@ -17,10 +17,9 @@ const { mongoDBURL } = require('../config');
 let MongoConnection;
 
 /**
- * SRP: connects to MongoDB and return the connection handle
+ * Connect to the MongoDB database
+ * @returns the database attached to this MongoDB connection
  */
-
-// connection to the db
 const connect = async () => {
   // always use try/catch to handle any exception
   try {
@@ -34,7 +33,7 @@ const connect = async () => {
   return false;
 };
 /**
- *
+ * get the database attached to the MongoDB connection
  * @returns the database attached to this MongoDB connection
  */
 const getDB = async () => {
@@ -46,7 +45,6 @@ const getDB = async () => {
 };
 
 /**
- *
  * Close the mongodb connection
  */
 const closeMongoDBConnection = async () => {

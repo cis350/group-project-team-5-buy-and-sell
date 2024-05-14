@@ -122,6 +122,17 @@ router.get('/:userId/items', async (req, res) => {
     }
 });
 
+/**
+ * Bookmark an item.
+ * @name POST /bookmark/:itemId
+ * @function
+ * @memberof module:itemRoutes
+ * @param {Object} req - The request object.
+ * @param {string} req.params.itemId - The ID of the item to bookmark.
+ * @param {string} req.userId - The ID of the user making the request.
+ * @returns {Object} The response object.
+ * @throws {Error} If there is an error processing the request.
+ */
 router.post('/bookmark/:itemId', async (req, res) => {
     if (!req.userId) {
         return res.status(401).json({ message: 'Unauthorized' });

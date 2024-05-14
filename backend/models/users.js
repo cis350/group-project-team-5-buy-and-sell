@@ -1,13 +1,8 @@
-// CREATE a new student
-// takes a db connector and a student object
-// and add the user to the DB
 const { ObjectId } = require('mongodb');
 const { getDB } = require('./dbUtils');
 
-// import ObjectID
-
 /**
- *
+ * CREATE a new user
  * @param {*} newStudent
  * @returns
  */
@@ -25,8 +20,8 @@ const createUser = async (newUser) => {
 };
 
 /**
- *
- * @returns
+ * GET/READ all users
+ * @returns {Array} - an array of all users
  */
 const getAllUsers = async () => {
   try {
@@ -43,7 +38,7 @@ const getAllUsers = async () => {
 /**
  * GET/READ a user given their ID
  * @param {*} studentID
- * @returns
+ * @returns {Object} - the user object
  */
 const getUser = async (userID) => {
   try {
@@ -57,9 +52,9 @@ const getUser = async (userID) => {
 };
 
 /**
- *
+ * GET/READ a user given their username
  * @param {*} studentName
- * @returns
+ * @returns {Object} - the user object
  */
 const getUserByUsername = async (username) => {
   try {
@@ -72,7 +67,12 @@ const getUserByUsername = async (username) => {
   }
 };
 
-// UPDATE a student given their ID
+/**
+ * UPDATE a user's username given their ID
+ * @param {*} userID
+ * @param {*} newUName
+ * @returns {Object} - the result object
+ */
 const updateUser = async (userID, newUName) => {
   try {
     // get the db
@@ -87,7 +87,11 @@ const updateUser = async (userID, newUName) => {
   }
 };
 
-// DELETE a student given their ID
+/**
+ * DELETE a user given their ID
+ * @param {*} userID
+ * @returns {Object} - the result object
+ */
 const deleteUser = async (userID) => {
   try {
     // get the db

@@ -4,8 +4,6 @@ require('dotenv').config();
 
 const router = express.Router();
 
-// Configure AWS with your access and secret keys here
-// (Ideally, these should be environment variables)
 AWS.config.update({
   region: process.env.AWS_REGION,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -14,7 +12,11 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
-// Route to generate a presigned URL for file uploads
+/**
+ * Route to generate a presigned URL for file uploads
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ */
 router.get('/generate-presigned-url', (req, res) => {
   const params = {
     Bucket: process.env.S3_BUCKET_NAME, // Your bucket name
